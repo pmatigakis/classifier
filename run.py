@@ -73,7 +73,7 @@ def main():
 
     api.add_resource(LabelsResource, "/api/v1/labels")
 
-    app.run()
+    app.run(port=settings.SERVER_PORT)
 
 if __name__ == "__main__":
     main()
