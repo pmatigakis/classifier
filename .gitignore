@@ -1,3 +1,5 @@
 .idea
 virtualenv/
+data/
 *.pyc
+settings.py
