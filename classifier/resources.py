@@ -10,7 +10,7 @@ import reqparsers
 from helpers import process_web_page
 
 
-class LabelsResource(Resource):
+class QueryResource(Resource):
     @jwt_required()
     def get(self):
         args = reqparsers.url_parser.parse_args()
@@ -54,7 +54,15 @@ class LabelsResource(Resource):
             if label_assigned == 1:
                 labels.append(class_ids[label_index])
 
+        categories = []
+
+        for label in labels:
+            items = label.split("_")
+            if items[0] == "category":
+                category = " ".join(items[1:])
+                categories.append(category)
+
         return {
             "url": args.url,
-            "labels": labels
+            "categories": categories
         }
