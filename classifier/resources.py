@@ -1,13 +1,11 @@
-from os import path
-
 import requests
 from flask import current_app
 from flask_jwt import jwt_required
 from flask_restful import Resource
-from sklearn.externals import joblib
 
 import reqparsers
 from helpers import process_web_page
+from classifier.extensions import clf
 
 
 class QueryResource(Resource):
@@ -35,34 +33,10 @@ class QueryResource(Resource):
 
         contents = process_web_page(response.text)
 
-        data_path = current_app.config["DATA_PATH"]
-
-        class_ids = joblib.load(path.join(data_path, "class_ids.pickle"))
-        class_ids = {class_id: klass for klass, class_id in class_ids.items()}
-
-        feature_extractor = joblib.load(
-            path.join(data_path, "feature_extractor.pickle"))
-
-        clf = joblib.load(path.join(data_path, "classifier.pickle"))
-
-        data = feature_extractor.transform([contents])
-
-        result = clf.predict(data)
-
-        labels = []
-        for label_index, label_assigned in enumerate(result[0]):
-            if label_assigned == 1:
-                labels.append(class_ids[label_index])
-
-        categories = []
-
-        for label in labels:
-            items = label.split("_")
-            if items[0] == "category":
-                category = " ".join(items[1:])
-                categories.append(category)
+        response = clf.classify(contents)
 
         return {
             "url": args.url,
-            "categories": categories
+            "categories": response["categories"][0],
+            "tags": response["categories"][1]
         }

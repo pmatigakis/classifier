@@ -1,10 +1,14 @@
+from os import path
+
 from flask import Flask
 from flask_restful import Api
+from sklearn.externals import joblib
 
 from classifier.authentication import identity, authenticate, payload_handler
 from classifier.resources import QueryResource
-from classifier.extensions import jwt
+from classifier.extensions import jwt, clf
 from classifier.models import db
+from classifier.ml import MultiLabelDocumentClassifier, DocumentLabelProcessor
 
 
 def create_app(settings_file):
@@ -22,5 +26,24 @@ def create_app(settings_file):
     jwt.authentication_callback = authenticate
     jwt.jwt_payload_callback = payload_handler
     jwt.init_app(app)
+
+    clf.init__app(app)
+
+    data_path = app.config["DATA_PATH"]
+
+    class_ids = joblib.load(path.join(data_path, "class_ids.pickle"))
+    class_ids = {class_id: klass for klass, class_id in class_ids.items()}
+
+    feature_extractor = joblib.load(
+        path.join(data_path, "feature_extractor.pickle"))
+
+    classifier = joblib.load(path.join(data_path, "classifier.pickle"))
+
+    label_classifier = MultiLabelDocumentClassifier(
+        class_ids, feature_extractor, classifier)
+
+    document_label_processor = DocumentLabelProcessor(label_classifier)
+
+    clf.add_classifier("categories", document_label_processor)
 
     return app
