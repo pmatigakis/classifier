@@ -18,6 +18,7 @@ setup(
         "psycopg2==2.6.2",
         "alembic==0.8.8",
         "Flask-Script==2.0.5",
+        "uWSGI==2.0.14"
     ],
     include_package_data=True,
     zip_safe=False,
