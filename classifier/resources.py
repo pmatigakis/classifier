@@ -40,3 +40,16 @@ class QueryResource(Resource):
             "categories": response["categories"][0],
             "tags": response["categories"][1]
         }
+
+    @jwt_required()
+    def post(self):
+        args = reqparsers.classification_request.parse_args()
+
+        contents = process_web_page(args.content)
+
+        response = clf.classify(contents)
+
+        return {
+            "categories": response["categories"][0],
+            "tags": response["categories"][1]
+        }
