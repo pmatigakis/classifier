@@ -33,12 +33,12 @@ class QueryResource(Resource):
 
         contents = process_web_page(response.text)
 
-        response = clf.classify(contents)
+        classification_response = clf.classify(contents)
 
         return {
             "url": args.url,
-            "categories": response["categories"][0],
-            "tags": response["categories"][1]
+            "result": classification_response,
+            "status_code": response.status_code
         }
 
     @jwt_required()
@@ -47,9 +47,8 @@ class QueryResource(Resource):
 
         contents = process_web_page(args.content)
 
-        response = clf.classify(contents)
+        classification_response = clf.classify(contents)
 
         return {
-            "categories": response["categories"][0],
-            "tags": response["categories"][1]
+            "result": classification_response
         }

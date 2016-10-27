@@ -44,6 +44,6 @@ def create_app(settings_file):
 
     document_label_processor = DocumentLabelProcessor(label_classifier)
 
-    clf.add_classifier("categories", document_label_processor)
+    clf.add_classifier("labels", document_label_processor)
 
     return app

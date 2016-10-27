@@ -24,18 +24,7 @@ class DocumentLabelProcessor(MultiLabelDocumentClassifier):
     def classify(self, document):
         labels = self.label_classifier.classify(document)
 
-        categories = []
-        tags = []
-
-        for label in labels:
-            items = label.split("_")
-            if items[0] == "category":
-                category = " ".join(items[1:])
-                categories.append(category)
-            else:
-                tags.append(label)
-
-        return categories, tags
+        return labels
 
 
 class Classifiers(object):
