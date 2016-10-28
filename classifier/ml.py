@@ -18,11 +18,7 @@ class MultiLabelDocumentClassifier(object):
 
 
 class Classifiers(object):
-    def __init__(self, app=None):
-        if app is not None:
-            self.init__app(app)
-
-    def init__app(self, app):
+    def __init__(self):
         self._classifiers = {}
 
     def add_classifier(self, name, classifier):
