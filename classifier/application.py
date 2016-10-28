@@ -8,7 +8,7 @@ from classifier.authentication import identity, authenticate, payload_handler
 from classifier.resources import QueryResource
 from classifier.extensions import jwt, clf
 from classifier.models import db
-from classifier.ml import MultiLabelDocumentClassifier, DocumentLabelProcessor
+from classifier.ml import MultiLabelDocumentClassifier
 
 
 def create_app(settings_file):
@@ -42,8 +42,6 @@ def create_app(settings_file):
     label_classifier = MultiLabelDocumentClassifier(
         class_ids, feature_extractor, classifier)
 
-    document_label_processor = DocumentLabelProcessor(label_classifier)
-
-    clf.add_classifier("labels", document_label_processor)
+    clf.add_classifier("labels", label_classifier)
 
     return app

@@ -17,16 +17,6 @@ class MultiLabelDocumentClassifier(object):
         return labels
 
 
-class DocumentLabelProcessor(MultiLabelDocumentClassifier):
-    def __init__(self, label_classifier):
-        self.label_classifier = label_classifier
-
-    def classify(self, document):
-        labels = self.label_classifier.classify(document)
-
-        return labels
-
-
 class Classifiers(object):
     def __init__(self, app=None):
         if app is not None:
