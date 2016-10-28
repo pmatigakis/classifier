@@ -42,6 +42,6 @@ def create_app(settings_file):
     label_classifier = MultiLabelDocumentClassifier(
         class_ids, feature_extractor, classifier)
 
-    clf.add_classifier("labels", label_classifier)
+    clf.add_classifier("categories", label_classifier)
 
     return app
