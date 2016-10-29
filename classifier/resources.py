@@ -1,5 +1,3 @@
-import requests
-from flask import current_app
 from flask_jwt import jwt_required
 from flask_restful import Resource
 
@@ -12,40 +10,10 @@ class ClassifierResource(Resource):
         self._document_classifier = document_classifier
 
     @jwt_required()
-    def get(self):
-        args = reqparsers.url_parser.parse_args()
-
-        headers = {
-            "User-Agent": current_app.config["USER_AGENT"]
-        }
-
-        response = requests.get(
-            args.url,
-            verify=current_app.config["VERIFY_SSL"],
-            timeout=current_app.config["REQUEST_TIMEOUT"],
-            headers=headers
-        )
-
-        if response.status_code != 200:
-            return {
-                "error": "invalid response status code",
-                "status_code": response.status_code,
-                "url": args.url
-            }
-
-        classification_response = self._classify(response.text)
-
-        return self._send_response(
-            classification_response,
-            url=args.url,
-            status_code=response.status_code
-        )
-
-    @jwt_required()
     def post(self):
         args = reqparsers.classification_request.parse_args()
 
-        classification_response = self._classify(args.contents)
+        classification_response = self._classify(args.content)
 
         return self._send_response(classification_response)
 
