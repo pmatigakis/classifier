@@ -1,5 +1,6 @@
+from flask import current_app
 from flask_jwt import jwt_required
-from flask_restful import Resource
+from flask_restful import Resource, abort
 
 import reqparsers
 from helpers import process_web_page
@@ -13,7 +14,17 @@ class ClassifierResource(Resource):
     def post(self):
         args = reqparsers.classification_request.parse_args()
 
-        classification_response = self._classify(args.content)
+        msg = "classifing content: content_size(%d)"
+        current_app.logger.info(msg, len(args.content))
+
+        try:
+            classification_response = self._classify(args.content)
+        except Exception:
+            current_app.logger.exception("content classification failed")
+            abort(
+                500,
+                error="content classification failed"
+            )
 
         return self._send_response(classification_response)
 
