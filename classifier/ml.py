@@ -1,3 +1,9 @@
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 class MultiLabelDocumentClassifier(object):
     def __init__(self, classes, feature_extractor, classifier):
         self.classes = classes
@@ -28,6 +34,9 @@ class Classifiers(object):
         response = {}
 
         for classifier_name, classifier in self._classifiers.items():
+            logger.debug(
+                "classifing document: classifier(%s)", classifier_name)
+
             results = classifier.classify(document)
 
             response[classifier_name] = results

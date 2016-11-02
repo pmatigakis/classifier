@@ -30,8 +30,9 @@ def initialize_logging(app):
 
     handler.setFormatter(formatter)
     handler.setLevel(log_level)
-    app.logger.addHandler(handler)
-    app.logger.setLevel(log_level)
+    logger = logging.getLogger("classifier")
+    logger.addHandler(handler)
+    logger.setLevel(log_level)
 
 
 def create_app(settings_file):
