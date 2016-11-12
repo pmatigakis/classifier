@@ -5,13 +5,16 @@ logger = logging.getLogger(__name__)
 
 
 class MultiLabelDocumentClassifier(object):
-    def __init__(self, classes, feature_extractor, classifier):
+    def __init__(self, classes, feature_extractor, feature_selector,
+                 classifier):
         self.classes = classes
         self.feature_extractor = feature_extractor
+        self.feature_selector = feature_selector
         self.classifier = classifier
 
     def classify(self, document):
         data = self.feature_extractor.transform([document])
+        data = self.feature_selector.transform(data)
 
         result = self.classifier.predict(data)
 

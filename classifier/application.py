@@ -53,10 +53,13 @@ def create_app(settings_file):
     feature_extractor = joblib.load(
         path.join(data_path, "feature_extractor.pickle"))
 
+    feature_selector = joblib.load(
+        path.join(data_path, "feature_selector.pickle"))
+
     classifier = joblib.load(path.join(data_path, "classifier.pickle"))
 
     label_classifier = MultiLabelDocumentClassifier(
-        class_ids, feature_extractor, classifier)
+        class_ids, feature_extractor, feature_selector, classifier)
 
     clf = Classifiers()
     clf.add_classifier("categories", label_classifier)
