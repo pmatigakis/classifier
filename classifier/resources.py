@@ -50,7 +50,7 @@ class MultiLabelClassifier(Resource):
 
     def process_result(self, result):
         if self.result_processor is None:
-            return result
+            return result.tolist()
         else:
             return self.result_processor(result)
 
