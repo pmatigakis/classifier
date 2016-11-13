@@ -7,10 +7,11 @@ from flask_restful import Api
 from sklearn.externals import joblib
 
 from classifier.authentication import identity, authenticate, payload_handler
-from classifier.resources import ClassifierResource
+from classifier.resources import MultiLabelClassifier
 from classifier.extensions import jwt
 from classifier.models import db
-from classifier.ml import MultiLabelDocumentClassifier, Classifiers
+from classifier.ml import (extract_page_contents,
+                           page_classification_result_processor)
 
 
 def initialize_logging(app):
@@ -58,14 +59,17 @@ def create_app(settings_file):
 
     classifier = joblib.load(path.join(data_path, "classifier.pickle"))
 
-    label_classifier = MultiLabelDocumentClassifier(
-        class_ids, feature_extractor, feature_selector, classifier)
-
-    clf = Classifiers()
-    clf.add_classifier("categories", label_classifier)
-
     api.add_resource(
-        ClassifierResource, "/api/v1/query", resource_class_args=[clf])
+        MultiLabelClassifier,
+        "/api/v1/query",
+        resource_class_kwargs={
+            "data_extractor": extract_page_contents,
+            "feature_extractor": feature_extractor,
+            "feature_selector": feature_selector,
+            "classifier": classifier,
+            "labels": class_ids,
+            "result_processor": page_classification_result_processor
+        })
 
     db.init_app(app)
 

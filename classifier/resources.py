@@ -1,43 +1,79 @@
 from flask import current_app
 from flask_jwt import jwt_required
 from flask_restful import Resource, abort
+import numpy as np
 
 import reqparsers
-from helpers import process_web_page
 
 
-class ClassifierResource(Resource):
-    def __init__(self, document_classifier):
-        self._document_classifier = document_classifier
+class MultiLabelClassifier(Resource):
+    def __init__(self, data_extractor=None, labels=None,
+                 feature_extractor=None, feature_selector=None,
+                 classifier=None, result_processor=None):
+        self.data_extractor = data_extractor
+        self.labels = labels
+        self.feature_extractor = feature_extractor
+        self.feature_selector = feature_selector
+        self.classifier = classifier
+        self.result_processor = result_processor
+
+    def extract_data(self):
+        if self.data_extractor is None:
+            args = reqparsers.classifier_data.parse_args()
+            data = np.array(args.data)
+        else:
+            data = self.data_extractor()
+
+        return data
+
+    def extract_features(self, data):
+        if self.feature_extractor is None:
+            return data
+        else:
+            return self.feature_extractor.transform(data)
+
+    def select_features(self, data):
+        if self.feature_selector is None:
+            return data
+        else:
+            return self.feature_selector.transform(data)
+
+    def parse_labels(self, predicted_labels):
+        if self.labels is None:
+            return predicted_labels
+        else:
+            labels = []
+            for label_index, label_assigned in enumerate(predicted_labels[0]):
+                if label_assigned == 1:
+                    labels.append(self.labels[label_index])
+            return labels
+
+    def process_result(self, result):
+        if self.result_processor is None:
+            return result
+        else:
+            return self.result_processor(result)
+
+    def classify(self):
+        data = [self.extract_data()]
+
+        features = self.extract_features(data)
+        features = self.select_features(features)
+
+        predicted_labels = self.classifier.predict(features)
+
+        result = self.parse_labels(predicted_labels)
+        result = self.process_result(result)
+
+        return {
+            "result": result
+        }
 
     @jwt_required()
     def post(self):
-        args = reqparsers.classification_request.parse_args()
-
-        msg = "classifing content: content_size(%d)"
-        current_app.logger.info(msg, len(args.content))
-
         try:
-            classification_response = self._classify(args.content)
+            return self.classify()
         except Exception:
-            current_app.logger.exception("content classification failed")
-            abort(
-                500,
-                error="content classification failed"
-            )
+            current_app.logger.exception("failed to classify object")
 
-        return self._send_response(classification_response)
-
-    def _classify(self, contents):
-        processed_contents = process_web_page(contents)
-
-        return self._document_classifier.classify(processed_contents)
-
-    def _send_response(self, classification_results, **kwargs):
-        response = {
-            "result": classification_results
-        }
-
-        response.update(**kwargs)
-
-        return response
+            abort(500, error="failed to classify object")
