@@ -45,7 +45,7 @@ def classify_text(text, access_token):
     }
 
     params = {
-        "content": text
+        "data": text
     }
 
     response = requests.post("http://localhost:5000/api/v1/query", json=params, headers=headers)

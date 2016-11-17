@@ -1,7 +1,10 @@
+from os import path
+
 from flask import current_app
 from flask_jwt import jwt_required
 from flask_restful import Resource, abort
 import numpy as np
+from sklearn.externals import joblib
 
 import reqparsers
 
@@ -40,7 +43,7 @@ class MultiLabelClassifier(Resource):
 
     def parse_labels(self, predicted_labels):
         if self.labels is None:
-            return predicted_labels
+            return predicted_labels[0].tolist()
         else:
             labels = []
             for label_index, label_assigned in enumerate(predicted_labels[0]):
@@ -50,7 +53,7 @@ class MultiLabelClassifier(Resource):
 
     def process_result(self, result):
         if self.result_processor is None:
-            return result.tolist()
+            return result
         else:
             return self.result_processor(result)
 
@@ -77,3 +80,36 @@ class MultiLabelClassifier(Resource):
             current_app.logger.exception("failed to classify object")
 
             abort(500, error="failed to classify object")
+
+
+def register_classifier(api, endpoint, classifier_type, data_path, **kwargs):
+    class_ids = None
+    if "labels" in kwargs:
+        class_ids = joblib.load(
+            path.join(data_path, kwargs.get("labels", "class_ids.pickle")))
+        class_ids = {class_id: klass for klass, class_id in class_ids.items()}
+
+    feature_extractor = None
+    if "feature_extractor" in kwargs:
+        feature_extractor = joblib.load(
+            path.join(data_path, kwargs["feature_extractor"]))
+
+    feature_selector = None
+    if "feature_selector" in kwargs:
+        feature_selector = joblib.load(
+            path.join(data_path, kwargs["feature_selector"]))
+
+    classifier = joblib.load(
+        path.join(data_path, kwargs.get("classifier", "classifier.pickle")))
+
+    api.add_resource(
+        classifier_type,
+        endpoint,
+        resource_class_kwargs={
+            "data_extractor": kwargs.get("data_extractor"),
+            "feature_extractor": feature_extractor,
+            "feature_selector": feature_selector,
+            "classifier": classifier,
+            "labels": class_ids,
+            "result_processor": kwargs.get("result_processor")
+        })

@@ -1,17 +1,13 @@
-from os import path
 import logging
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 from flask_restful import Api
-from sklearn.externals import joblib
 
 from classifier.authentication import identity, authenticate, payload_handler
-from classifier.resources import MultiLabelClassifier
+from classifier.resources import register_classifier
 from classifier.extensions import jwt
 from classifier.models import db
-from classifier.ml import (extract_page_contents,
-                           page_classification_result_processor)
 
 
 def initialize_logging(app):
@@ -46,30 +42,10 @@ def create_app(settings_file):
 
     api = Api(app)
 
-    data_path = app.config["DATA_PATH"]
-
-    class_ids = joblib.load(path.join(data_path, "class_ids.pickle"))
-    class_ids = {class_id: klass for klass, class_id in class_ids.items()}
-
-    feature_extractor = joblib.load(
-        path.join(data_path, "feature_extractor.pickle"))
-
-    feature_selector = joblib.load(
-        path.join(data_path, "feature_selector.pickle"))
-
-    classifier = joblib.load(path.join(data_path, "classifier.pickle"))
-
-    api.add_resource(
-        MultiLabelClassifier,
-        "/api/v1/query",
-        resource_class_kwargs={
-            "data_extractor": extract_page_contents,
-            "feature_extractor": feature_extractor,
-            "feature_selector": feature_selector,
-            "classifier": classifier,
-            "labels": class_ids,
-            "result_processor": page_classification_result_processor
-        })
+    for classifier_specs in app.config["CLASSIFIERS"]:
+        endpoint, classifier_type, data_path, kwargs = classifier_specs
+        register_classifier(
+            api, endpoint, classifier_type, data_path, **kwargs)
 
     db.init_app(app)
 
