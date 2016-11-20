@@ -10,11 +10,11 @@ import reqparsers
 
 
 class MultiLabelClassifier(Resource):
-    def __init__(self, data_extractor=None, labels=None,
+    def __init__(self, data_extractor=None, binarizer=None,
                  feature_extractor=None, feature_selector=None,
                  classifier=None, result_processor=None):
         self.data_extractor = data_extractor
-        self.labels = labels
+        self.binarizer = binarizer
         self.feature_extractor = feature_extractor
         self.feature_selector = feature_selector
         self.classifier = classifier
@@ -42,14 +42,10 @@ class MultiLabelClassifier(Resource):
             return self.feature_selector.transform(data)
 
     def parse_labels(self, predicted_labels):
-        if self.labels is None:
+        if self.binarizer is None:
             return predicted_labels[0].tolist()
         else:
-            labels = []
-            for label_index, label_assigned in enumerate(predicted_labels[0]):
-                if label_assigned == 1:
-                    labels.append(self.labels[label_index])
-            return labels
+            return self.binarizer.inverse_transform(predicted_labels)[0]
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -82,12 +78,11 @@ class MultiLabelClassifier(Resource):
             abort(500, error="failed to classify object")
 
 
-def register_classifier(api, name, endpoint, classifier_type, data_path, **kwargs):
-    class_ids = None
-    if "labels" in kwargs:
-        class_ids = joblib.load(
-            path.join(data_path, kwargs.get("labels", "class_ids.pickle")))
-        class_ids = {class_id: klass for klass, class_id in class_ids.items()}
+def register_classifier(api, name, endpoint, classifier_type, data_path,
+                        **kwargs):
+    if "binarizer" in kwargs:
+        binarizer = joblib.load(
+            path.join(data_path, kwargs["binarizer"]))
 
     feature_extractor = None
     if "feature_extractor" in kwargs:
@@ -111,6 +106,6 @@ def register_classifier(api, name, endpoint, classifier_type, data_path, **kwarg
             "feature_extractor": feature_extractor,
             "feature_selector": feature_selector,
             "classifier": classifier,
-            "labels": class_ids,
+            "binarizer": binarizer,
             "result_processor": kwargs.get("result_processor")
         })
