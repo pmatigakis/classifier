@@ -45,7 +45,7 @@ class MultiLabelClassifier(Resource):
         if self.binarizer is None:
             return predicted_labels[0].tolist()
         else:
-            return self.binarizer.inverse_transform(predicted_labels)[0]
+            return dict(zip(self.binarizer.classes_, predicted_labels[0]))
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -59,7 +59,7 @@ class MultiLabelClassifier(Resource):
         features = self.extract_features(data)
         features = self.select_features(features)
 
-        predicted_labels = self.classifier.predict(features)
+        predicted_labels = self.classifier.predict_proba(features)
 
         result = self.parse_labels(predicted_labels)
         result = self.process_result(result)

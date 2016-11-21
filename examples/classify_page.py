@@ -53,20 +53,6 @@ def classify_text(text, access_token):
     return response.json()
 
 
-def classify_topic(text, access_token, category):
-    headers = {
-        "Authorization": "JWT %s" % access_token,
-    }
-
-    params = {
-        "data": text
-    }
-
-    response = requests.post("http://localhost:5000/api/v1/topics/%s" % category, json=params, headers=headers)
-
-    return response.json()
-
-
 def main():
     args = get_arguments()
 
@@ -77,13 +63,6 @@ def main():
     result = classify_text(contents, access_token)
 
     print result
-
-    for category in result["result"]["categories"]:
-        if category == "cat__politis": continue
-        category = category[5:]
-        result = classify_topic(contents, access_token, category)
-
-        print result
 
 
 if __name__ == "__main__":
