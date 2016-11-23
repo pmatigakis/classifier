@@ -43,9 +43,8 @@ def create_app(settings_file):
     api = Api(app)
 
     for classifier_specs in app.config["CLASSIFIERS"]:
-        name, endpoint, classifier_type, data_path, kwargs = classifier_specs
-        register_classifier(
-            api, name, endpoint, classifier_type, data_path, **kwargs)
+        name, endpoint, classifier_type, kwargs = classifier_specs
+        register_classifier(api, name, endpoint, classifier_type, **kwargs)
 
     db.init_app(app)
 

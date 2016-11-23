@@ -81,24 +81,19 @@ class MultiLabelClassifier(Resource):
             abort(500, error="failed to classify object")
 
 
-def register_classifier(api, name, endpoint, classifier_type, data_path,
-                        **kwargs):
+def register_classifier(api, name, endpoint, classifier_type, **kwargs):
     if "binarizer" in kwargs:
-        binarizer = joblib.load(
-            path.join(data_path, kwargs["binarizer"]))
+        binarizer = joblib.load(kwargs["binarizer"])
 
     feature_extractor = None
     if "feature_extractor" in kwargs:
-        feature_extractor = joblib.load(
-            path.join(data_path, kwargs["feature_extractor"]))
+        feature_extractor = joblib.load(kwargs["feature_extractor"])
 
     feature_selector = None
     if "feature_selector" in kwargs:
-        feature_selector = joblib.load(
-            path.join(data_path, kwargs["feature_selector"]))
+        feature_selector = joblib.load(kwargs["feature_selector"])
 
-    classifier = joblib.load(
-        path.join(data_path, kwargs.get("classifier", "classifier.pickle")))
+    classifier = joblib.load(kwargs["classifier"])
 
     api.add_resource(
         classifier_type,
