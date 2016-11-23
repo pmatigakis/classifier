@@ -5,3 +5,4 @@ data/
 settings.py
 classifier.egg-info/
 *.log
+temp/
