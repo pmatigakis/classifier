@@ -23,7 +23,7 @@ class MultiLabelClassifier(Resource):
     def extract_data(self):
         if self.data_extractor is None:
             args = reqparsers.classifier_data.parse_args()
-            data = np.array(args.data)
+            data = np.array([args.data])
         else:
             data = self.data_extractor()
 
@@ -43,9 +43,9 @@ class MultiLabelClassifier(Resource):
 
     def parse_labels(self, predicted_labels):
         if self.binarizer is None:
-            return predicted_labels[0].tolist()
+            return predicted_labels.tolist()
         else:
-            return dict(zip(self.binarizer.classes_, predicted_labels[0]))
+            return dict(zip(self.binarizer.classes_, predicted_labels))
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -54,12 +54,15 @@ class MultiLabelClassifier(Resource):
             return self.result_processor(result)
 
     def classify(self):
-        data = [self.extract_data()]
+        data = self.extract_data()
 
         features = self.extract_features(data)
         features = self.select_features(features)
 
         predicted_labels = self.classifier.predict_proba(features)
+        # the result should be only one row because we allow one row for the
+        # classification data
+        predicted_labels = predicted_labels[0]
 
         result = self.parse_labels(predicted_labels)
         result = self.process_result(result)
