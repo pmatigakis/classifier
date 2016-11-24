@@ -20,6 +20,10 @@ setup(
         "Flask-Script==2.0.5",
         "uWSGI==2.0.14"
     ],
+    test_suite = 'nose.collector',
+    tests_require =[
+        "nose==1.3.7"
+    ],
     include_package_data=True,
     zip_safe=False,
     entry_points={
