@@ -1,107 +1,26 @@
 from flask import current_app
 from flask_jwt import jwt_required
 from flask_restful import Resource, abort
-import numpy as np
-from sklearn.externals import joblib
 
 import reqparsers
 
 
-class MultiLabelClassifier(Resource):
-    def __init__(self, data_extractor=None, binarizer=None,
-                 feature_extractor=None, feature_selector=None,
-                 classifier=None, result_processor=None):
-        self.data_extractor = data_extractor
-        self.binarizer = binarizer
-        self.feature_extractor = feature_extractor
-        self.feature_selector = feature_selector
-        self.classifier = classifier
-        self.result_processor = result_processor
-
-    def extract_data(self):
-        if self.data_extractor is None:
-            args = reqparsers.classifier_data.parse_args()
-            data = np.array([args.data])
-        else:
-            data = self.data_extractor()
-
-        return data
-
-    def extract_features(self, data):
-        if self.feature_extractor is None:
-            return data
-        else:
-            return self.feature_extractor.transform(data)
-
-    def select_features(self, data):
-        if self.feature_selector is None:
-            return data
-        else:
-            return self.feature_selector.transform(data)
-
-    def parse_labels(self, predicted_labels):
-        if self.binarizer is None:
-            return predicted_labels.tolist()
-        else:
-            return dict(zip(self.binarizer.classes_, predicted_labels))
-
-    def process_result(self, result):
-        if self.result_processor is None:
-            return result
-        else:
-            return self.result_processor(result)
-
-    def classify(self):
-        data = self.extract_data()
-
-        features = self.extract_features(data)
-        features = self.select_features(features)
-
-        predicted_labels = self.classifier.predict_proba(features)
-        # the result should be only one row because we allow one row for the
-        # classification data
-        predicted_labels = predicted_labels[0]
-
-        result = self.parse_labels(predicted_labels)
-        result = self.process_result(result)
-
-        return {
-            "result": result
-        }
-
+class ClassifiersResource(Resource):
     @jwt_required()
-    def post(self):
+    def post(self, classifier):
+        classifier_implementation = current_app.config["CLASSIFIERS"] \
+                                               .get(classifier)
+
+        if classifier_implementation is None:
+            abort(404, error="unknown classifier", classifier=classifier)
+
+        args = reqparsers.classifier_data.parse_args()
+
         try:
-            return self.classify()
+            return {
+                "result": classifier_implementation.classify(args)
+            }
         except Exception:
             current_app.logger.exception("failed to classify object")
 
             abort(500, error="failed to classify object")
-
-
-def register_classifier(api, name, endpoint, classifier_type, **kwargs):
-    if "binarizer" in kwargs:
-        binarizer = joblib.load(kwargs["binarizer"])
-
-    feature_extractor = None
-    if "feature_extractor" in kwargs:
-        feature_extractor = joblib.load(kwargs["feature_extractor"])
-
-    feature_selector = None
-    if "feature_selector" in kwargs:
-        feature_selector = joblib.load(kwargs["feature_selector"])
-
-    classifier = joblib.load(kwargs["classifier"])
-
-    api.add_resource(
-        classifier_type,
-        endpoint,
-        endpoint=name,
-        resource_class_kwargs={
-            "data_extractor": kwargs.get("data_extractor"),
-            "feature_extractor": feature_extractor,
-            "feature_selector": feature_selector,
-            "classifier": classifier,
-            "binarizer": binarizer,
-            "result_processor": kwargs.get("result_processor")
-        })

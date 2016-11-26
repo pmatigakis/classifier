@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Api
 
 from classifier.authentication import identity, authenticate, payload_handler
-from classifier.resources import register_classifier
+from classifier.resources import ClassifiersResource
 from classifier.extensions import jwt
 from classifier.models import db
 
@@ -42,9 +42,7 @@ def create_app(settings_file):
 
     api = Api(app)
 
-    for classifier_specs in app.config["CLASSIFIERS"]:
-        name, endpoint, classifier_type, kwargs = classifier_specs
-        register_classifier(api, name, endpoint, classifier_type, **kwargs)
+    api.add_resource(ClassifiersResource, "/api/<string:classifier>")
 
     db.init_app(app)
 
