@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def extract_text_data(data):
-    return data[0]
+    return data
 
 
 class Classifier(object):
