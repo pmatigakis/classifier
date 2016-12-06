@@ -13,12 +13,15 @@ def extract_text_data(data):
 
 class Classifier(object):
     def __init__(self, classifier, data_extractor=None, feature_extractor=None,
-                 feature_selector=None, result_processor=None):
+                 feature_selector=None, result_processor=None, binarizer=None):
         if feature_extractor is not None:
             feature_extractor = joblib.load(feature_extractor)
 
         if feature_selector is not None:
             feature_selector = joblib.load(feature_selector)
+
+        if binarizer is not None:
+            binarizer = joblib.load(binarizer)
 
         classifier = joblib.load(classifier)
 
@@ -26,14 +29,8 @@ class Classifier(object):
         self.feature_extractor = feature_extractor
         self.feature_selector = feature_selector
         self.classifier = classifier
+        self.binarizer = binarizer
         self.result_processor = result_processor
-
-
-class MultiLabelClassifier(Classifier):
-    def __init__(self, classifier, binarizer, **kwargs):
-        super(MultiLabelClassifier, self).__init__(classifier, **kwargs)
-
-        self.binarizer = joblib.load(binarizer)
 
     def extract_data(self, args):
         if self.data_extractor is None:
@@ -55,11 +52,12 @@ class MultiLabelClassifier(Classifier):
         else:
             return self.feature_selector.transform(data)
 
-    def parse_labels(self, predicted_labels):
-        if self.binarizer is None:
-            return predicted_labels.tolist()
+    def label_result(self, result):
+        if self.binarizer:
+            # TODO: temporary fix
+            return self.binarizer.inverse_transform(np.array([result]))[0]
         else:
-            return dict(zip(self.binarizer.classes_, predicted_labels))
+            return result
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -67,18 +65,44 @@ class MultiLabelClassifier(Classifier):
         else:
             return self.result_processor(result)
 
+    def run_classifier(self, features):
+        return self.classifier.predict(features)
+
     def classify(self, args):
         data = self.extract_data(args)
 
         features = self.extract_features(data)
         features = self.select_features(features)
 
-        predicted_labels = self.classifier.predict_proba(features)
+        result = self.run_classifier(features)
         # the result should be only one row because we allow one row for the
         # classification data
-        predicted_labels = predicted_labels[0]
+        result = result[0].tolist()
 
-        result = self.parse_labels(predicted_labels)
+        result = self.label_result(result)
+
         result = self.process_result(result)
 
         return result
+
+
+class ProbabilityClassifier(Classifier):
+    def __init__(self, classifier, data_extractor=None, feature_extractor=None,
+                 feature_selector=None, result_processor=None, binarizer=None):
+        super(ProbabilityClassifier, self).__init__(
+            classifier=classifier,
+            data_extractor=data_extractor,
+            feature_extractor=feature_extractor,
+            feature_selector=feature_selector,
+            result_processor=result_processor,
+            binarizer=binarizer
+        )
+
+    def label_result(self, result):
+        if self.binarizer:
+            return dict(zip(self.binarizer.classes_, result))
+        else:
+            return dict(zip(self.classifier.classes_, result))
+
+    def run_classifier(self, features):
+        return self.classifier.predict_proba(features)
