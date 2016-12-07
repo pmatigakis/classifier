@@ -1,6 +1,6 @@
 from os import path
 
-from classifier.ml import ProbabilityClassifier, Classifier
+from classifier.ml import Classifier
 
 
 TESTING = True
@@ -16,15 +16,17 @@ classifiers_path = path.join(
     path.dirname(path.abspath(__file__)), "..", "classifiers")
 
 CLASSIFIERS = {
-    "multilabel_with_binarizer": ProbabilityClassifier(
+    "multilabel_with_binarizer": Classifier(
         binarizer=path.join(
             classifiers_path, "multilabel", "binarizer.pickle"),
         classifier=path.join(
-            classifiers_path, "multilabel", "classifier.pickle")
+            classifiers_path, "multilabel", "classifier.pickle"),
+        probabilities=True
     ),
-    "multilabel": ProbabilityClassifier(
+    "multilabel": Classifier(
         classifier=path.join(
-            classifiers_path, "multilabel", "classifier.pickle")
+            classifiers_path, "multilabel", "classifier.pickle"),
+        probabilities=True
     ),
     "iris": Classifier(
         classifier=path.join(classifiers_path, "iris", "classifier.pickle")

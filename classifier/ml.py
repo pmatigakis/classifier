@@ -13,7 +13,7 @@ def extract_text_data(data):
 
 class Classifier(object):
     def __init__(self, classifier, data_extractor=None, result_processor=None,
-                 binarizer=None):
+                 binarizer=None, probabilities=False):
         if binarizer is not None:
             binarizer = joblib.load(binarizer)
 
@@ -23,6 +23,7 @@ class Classifier(object):
         self.classifier = classifier
         self.binarizer = binarizer
         self.result_processor = result_processor
+        self.probabilities = probabilities
 
     def extract_data(self, args):
         if self.data_extractor is None:
@@ -33,10 +34,18 @@ class Classifier(object):
         return data
 
     def label_result(self, result):
+        result = result[0]
+
         if self.binarizer:
-            return self.binarizer.inverse_transform(result)[0]
+            if self.probabilities:
+                return dict(zip(self.binarizer.classes_, result))
+            else:
+                return self.binarizer.inverse_transform(np.array([result]))[0]
         else:
-            return result[0].tolist()
+            if self.probabilities:
+                return dict(zip(self.classifier.classes_, result))
+            else:
+                return result.tolist()
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -44,8 +53,11 @@ class Classifier(object):
         else:
             return self.result_processor(result)
 
-    def run_classifier(self, features):
-        return self.classifier.predict(features)
+    def run_classifier(self, data):
+        if self.probabilities:
+            return self.classifier.predict_proba(data)
+        else:
+            return self.classifier.predict(data)
 
     def classify(self, args):
         data = self.extract_data(args)
@@ -55,25 +67,3 @@ class Classifier(object):
         result = self.process_result(result)
 
         return result
-
-
-class ProbabilityClassifier(Classifier):
-    def __init__(self, classifier, data_extractor=None, result_processor=None,
-                 binarizer=None):
-        super(ProbabilityClassifier, self).__init__(
-            classifier=classifier,
-            data_extractor=data_extractor,
-            result_processor=result_processor,
-            binarizer=binarizer
-        )
-
-    def label_result(self, result):
-        result = result[0]
-
-        if self.binarizer:
-            return dict(zip(self.binarizer.classes_, result))
-        else:
-            return dict(zip(self.classifier.classes_, result))
-
-    def run_classifier(self, features):
-        return self.classifier.predict_proba(features)
