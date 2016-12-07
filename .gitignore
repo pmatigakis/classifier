@@ -6,3 +6,5 @@ settings.py
 classifier.egg-info/
 *.log
 temp/
+.coverage
+cover/
