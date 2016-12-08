@@ -1,0 +1,1 @@
+A Flask web application that exposes a scikit-learn classifier over an REST API endpoint
