@@ -2,7 +2,6 @@
 virtualenv/
 data/
 *.pyc
-settings.py
 classifier.egg-info/
 *.log
 temp/
