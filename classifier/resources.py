@@ -5,7 +5,7 @@ from flask_restful import Resource, abort
 import reqparsers
 
 
-class ClassifiersResource(Resource):
+class ClassifierResource(Resource):
     @jwt_required()
     def post(self, classifier):
         classifier_implementation = current_app.config["CLASSIFIERS"] \
