@@ -20,7 +20,7 @@ def main():
         "Authorization": "JWT %s" % token
     }
 
-    response = requests.post("http://localhost:5000/api/classify", headers=headers, json={"data": data})
+    response = requests.post("http://localhost:5000/api/v1/predict/iris", headers=headers, json={"data": data})
 
     print response.json()
 

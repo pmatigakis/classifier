@@ -12,7 +12,7 @@ PROPAGATE_EXCEPTIONS = True
 ENABLE_LOGGING = False
 
 CLASSIFIERS = {
-    "classify": Classifier(
+    "iris": Classifier(
         classifier="classifier.pickle"
     )
 }
