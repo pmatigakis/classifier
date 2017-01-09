@@ -21,7 +21,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/multilabel_with_binarizer",
+            "/api/v1/predict/multilabel_with_binarizer",
             data=json.dumps(data),
             headers=headers
         )
@@ -56,7 +56,10 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/multilabel", data=json.dumps(data), headers=headers)
+            "/api/v1/predict/multilabel",
+            data=json.dumps(data),
+            headers=headers
+        )
 
         self.assertEqual(response.status_code, 200)
 
@@ -88,7 +91,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/iris", data=json.dumps(data), headers=headers)
+            "/api/v1/predict/iris", data=json.dumps(data), headers=headers)
 
         self.assertEqual(response.status_code, 200)
 
@@ -117,7 +120,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/iris_multilabel_with_binarizer",
+            "/api/v1/predict/iris_multilabel_with_binarizer",
             data=json.dumps(data),
             headers=headers
         )
@@ -149,7 +152,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/iris_with_data_extractor",
+            "/api/v1/predict/iris_with_data_extractor",
             data=json.dumps(data),
             headers=headers
         )
@@ -181,7 +184,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/iris_with_result_processor",
+            "/api/v1/predict/iris_with_result_processor",
             data=json.dumps(data),
             headers=headers
         )

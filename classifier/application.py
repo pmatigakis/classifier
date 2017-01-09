@@ -42,7 +42,8 @@ def create_app(settings_file):
 
     api = Api(app)
 
-    api.add_resource(ClassifiersResource, "/api/<string:classifier>")
+    api.add_resource(
+        ClassifiersResource, "/api/v1/predict/<string:classifier>")
 
     db.init_app(app)
 
