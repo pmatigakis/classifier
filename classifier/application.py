@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Api
 
 from classifier.authentication import identity, authenticate, payload_handler
-from classifier.resources import ClassifierResource
+from classifier.resources import ClassifierResource, ClassifiersResource
 from classifier.extensions import jwt
 from classifier.models import db
 
@@ -44,6 +44,8 @@ def create_app(settings_file):
 
     api.add_resource(
         ClassifierResource, "/api/v1/predict/<string:classifier>")
+
+    api.add_resource(ClassifiersResource, "/api/v1/classifiers")
 
     db.init_app(app)
 

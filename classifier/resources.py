@@ -24,3 +24,9 @@ class ClassifierResource(Resource):
             current_app.logger.exception("failed to classify object")
 
             abort(500, error="failed to classify object")
+
+
+class ClassifiersResource(Resource):
+    @jwt_required()
+    def get(self):
+        return current_app.config["CLASSIFIERS"].keys()

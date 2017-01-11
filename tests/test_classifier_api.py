@@ -201,5 +201,35 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
 
+class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
+    def test_get_available_classifiers(self):
+        access_token = self.authenticate_using_jwt(
+            self.username, self.password)
+
+        client = self.app.test_client()
+
+        headers = {
+            "Authorization": "JWT {}".format(access_token)
+        }
+
+        response = client.get(
+            "/api/v1/classifiers",
+            headers=headers
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+
+        self.assertItemsEqual(
+            data,
+            [
+                'iris', 'iris_multilabel_with_binarizer',
+                'iris_with_result_processor', 'multilabel_with_binarizer',
+                'multilabel', 'iris_with_data_extractor'
+             ]
+        )
+
+
 if __name__ == "__main__":
     main()
