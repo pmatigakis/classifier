@@ -4,10 +4,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_restful import Api
 
-from classifier.authentication import identity, authenticate, payload_handler
 from classifier.resources import ClassifierResource, ClassifiersResource
-from classifier.extensions import jwt
-from classifier.models import db
 
 
 def initialize_logging(app):
@@ -46,12 +43,5 @@ def create_app(settings_file):
         ClassifierResource, "/api/v1/predict/<string:classifier>")
 
     api.add_resource(ClassifiersResource, "/api/v1/classifiers")
-
-    db.init_app(app)
-
-    jwt.identity_callback = identity
-    jwt.authentication_callback = authenticate
-    jwt.jwt_payload_callback = payload_handler
-    jwt.init_app(app)
 
     return app

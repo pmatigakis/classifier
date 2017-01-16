@@ -6,9 +6,6 @@ from common import ClassifierTestCaseWithMockClassifiers
 
 class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
     def test_probability_multilabel_classifier(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -17,7 +14,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -41,9 +37,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
     def test_probability_multilabel_classifier_no_binarizer(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -52,7 +45,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -76,9 +68,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
     def test_classifier(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -87,7 +76,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -105,9 +93,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
     def test_multilabel_classifier_with_binarizer(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -116,7 +101,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -137,9 +121,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
     def test_classifier_with_data_extractor(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -148,7 +129,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -169,9 +149,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         )
 
     def test_classifier_with_result_processor(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
         data = {
@@ -180,7 +157,6 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "JWT {}".format(access_token)
         }
 
         response = client.post(
@@ -203,19 +179,9 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
 class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
     def test_get_available_classifiers(self):
-        access_token = self.authenticate_using_jwt(
-            self.username, self.password)
-
         client = self.app.test_client()
 
-        headers = {
-            "Authorization": "JWT {}".format(access_token)
-        }
-
-        response = client.get(
-            "/api/v1/classifiers",
-            headers=headers
-        )
+        response = client.get("/api/v1/classifiers",)
 
         self.assertEqual(response.status_code, 200)
 

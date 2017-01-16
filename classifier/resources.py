@@ -1,12 +1,10 @@
 from flask import current_app
-from flask_jwt import jwt_required
 from flask_restful import Resource, abort
 
 import reqparsers
 
 
 class ClassifierResource(Resource):
-    @jwt_required()
     def post(self, classifier):
         classifier_implementation = current_app.config["CLASSIFIERS"] \
                                                .get(classifier)
@@ -27,6 +25,5 @@ class ClassifierResource(Resource):
 
 
 class ClassifiersResource(Resource):
-    @jwt_required()
     def get(self):
         return current_app.config["CLASSIFIERS"].keys()
