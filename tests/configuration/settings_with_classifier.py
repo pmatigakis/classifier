@@ -32,3 +32,5 @@ CLASSIFIERS = {
         result_processor=lambda r: {"data": r}
     ),
 }
+
+ERROR_404_HELP = False

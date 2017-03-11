@@ -18,7 +18,8 @@ setup(
     ],
     test_suite = 'nose.collector',
     tests_require =[
-        "nose==1.3.7"
+        "nose==1.3.7",
+        "mock==2.0.0"
     ],
     include_package_data=True,
     zip_safe=False,

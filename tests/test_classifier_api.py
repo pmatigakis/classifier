@@ -1,7 +1,10 @@
 import json
 from unittest import main
 
+from mock import patch
+
 from common import ClassifierTestCaseWithMockClassifiers
+from classifier.ml import Classifier
 
 
 class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
@@ -115,6 +118,63 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
             data,
             {
                 "result": {"data": "Iris-virginica"}
+            }
+        )
+
+    def test_classifier_does_not_exist(self):
+        client = self.app.test_client()
+
+        data = {
+            "data": [5.4, 3.0, 4.5, 1.5]
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        response = client.post(
+            "/api/v1/predict/fail_test",
+            data=json.dumps(data),
+            headers=headers
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+
+        self.assertDictEqual(
+            data,
+            {
+                "classifier": "fail_test",
+                "error": "unknown classifier"
+            }
+        )
+
+    @patch.object(Classifier, "classify")
+    def test_error_while_running_classification(self, classify_mock):
+        classify_mock.side_effect = Exception
+
+        client = self.app.test_client()
+
+        data = {
+            "data": [5.4, 3.0, 4.5, 1.5]
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        response = client.post(
+            "/api/v1/predict/iris", data=json.dumps(data), headers=headers)
+
+        self.assertEqual(response.status_code, 500)
+
+        data = json.loads(response.data)
+
+        self.assertDictEqual(
+            data,
+            {
+                "error": "failed to classify object"
             }
         )
 
