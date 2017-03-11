@@ -5,11 +5,11 @@ from common import ClassifierTestCaseWithMockClassifiers
 
 
 class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
-    def test_probability_multilabel_classifier(self):
+    def test_probability_classifier(self):
         client = self.app.test_client()
 
         data = {
-            "data": [1, 1]
+            "data": [5.4, 3.0, 4.5, 1.5]
         }
 
         headers = {
@@ -17,7 +17,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         }
 
         response = client.post(
-            "/api/v1/predict/multilabel_with_binarizer",
+            "/api/v1/predict/iris_probabilities",
             data=json.dumps(data),
             headers=headers
         )
@@ -30,39 +30,9 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
             data,
             {
                 "result": {
-                    'label_1': 0.7678530630986858,
-                    'label_2': 0.2321469369013142
-                }
-            }
-        )
-
-    def test_probability_multilabel_classifier_no_binarizer(self):
-        client = self.app.test_client()
-
-        data = {
-            "data": [1, 1]
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-        }
-
-        response = client.post(
-            "/api/v1/predict/multilabel",
-            data=json.dumps(data),
-            headers=headers
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data)
-
-        self.assertDictEqual(
-            data,
-            {
-                "result": {
-                    '0': 0.7678530630986858,
-                    '1': 0.2321469369013142
+                    'Iris-setosa': 0.010312340747190656,
+                    'Iris-versicolor': 0.3650346947203982,
+                    'Iris-virginica': 0.6246529645324113
                 }
             }
         )
@@ -92,39 +62,11 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
             }
         )
 
-    def test_multilabel_classifier_with_binarizer(self):
-        client = self.app.test_client()
-
-        data = {
-            "data": [6.4, 3.2, 5.3, 2.3]
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-        }
-
-        response = client.post(
-            "/api/v1/predict/iris_multilabel_with_binarizer",
-            data=json.dumps(data),
-            headers=headers
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data)
-
-        self.assertDictEqual(
-            data,
-            {
-                "result": ["Iris-virginica"]
-            }
-        )
-
     def test_classifier_with_data_extractor(self):
         client = self.app.test_client()
 
         data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
+            "data": [5.4, 3.0, 4.5, 1.5, 0.0, 0.0, 0.0]
         }
 
         headers = {
@@ -190,9 +132,10 @@ class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
         self.assertItemsEqual(
             data,
             [
-                'iris', 'iris_multilabel_with_binarizer',
-                'iris_with_result_processor', 'multilabel_with_binarizer',
-                'multilabel', 'iris_with_data_extractor'
+                'iris',
+                'iris_probabilities',
+                'iris_with_result_processor',
+                'iris_with_data_extractor'
              ]
         )
 

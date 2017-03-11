@@ -13,15 +13,11 @@ def extract_text_data(data):
 
 class Classifier(object):
     def __init__(self, classifier, data_extractor=None, result_processor=None,
-                 binarizer=None, probabilities=False):
-        if binarizer is not None:
-            binarizer = joblib.load(binarizer)
-
+                 probabilities=False):
         classifier = joblib.load(classifier)
 
         self.data_extractor = data_extractor
         self.classifier = classifier
-        self.binarizer = binarizer
         self.result_processor = result_processor
         self.probabilities = probabilities
 
@@ -32,20 +28,6 @@ class Classifier(object):
             data = self.data_extractor(args.data)
 
         return data
-
-    def label_result(self, result):
-        result = result[0]
-
-        if self.binarizer:
-            if self.probabilities:
-                return dict(zip(self.binarizer.classes_, result))
-            else:
-                return self.binarizer.inverse_transform(np.array([result]))[0]
-        else:
-            if self.probabilities:
-                return dict(zip(self.classifier.classes_, result))
-            else:
-                return result.tolist()
 
     def process_result(self, result):
         if self.result_processor is None:
@@ -63,7 +45,16 @@ class Classifier(object):
         data = self.extract_data(args)
 
         result = self.run_classifier(data)
-        result = self.label_result(result)
+
+        # TODO: the classifier will assume that only one item will be
+        # classified so it will only expect one result. This will change in the
+        # future so that multiple items can be classified
+        result = result[0]
+        if self.probabilities:
+            result = dict(zip(self.classifier.classes_, result))
+        else:
+            result = result.tolist()
+
         result = self.process_result(result)
 
         return result

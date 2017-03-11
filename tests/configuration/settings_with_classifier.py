@@ -16,29 +16,15 @@ classifiers_path = path.join(
     path.dirname(path.abspath(__file__)), "..", "classifiers")
 
 CLASSIFIERS = {
-    "multilabel_with_binarizer": Classifier(
-        binarizer=path.join(
-            classifiers_path, "multilabel", "binarizer.pickle"),
-        classifier=path.join(
-            classifiers_path, "multilabel", "classifier.pickle"),
-        probabilities=True
-    ),
-    "multilabel": Classifier(
-        classifier=path.join(
-            classifiers_path, "multilabel", "classifier.pickle"),
-        probabilities=True
-    ),
     "iris": Classifier(
         classifier=path.join(classifiers_path, "iris", "classifier.pickle")
     ),
-    "iris_multilabel_with_binarizer": Classifier(
-        binarizer=path.join(
-            classifiers_path, "iris", "binarizer.pickle"),
-        classifier=path.join(
-            classifiers_path, "iris", "multilabel_classifier.pickle")
+    "iris_probabilities": Classifier(
+        classifier=path.join(classifiers_path, "iris", "classifier.pickle"),
+        probabilities=True
     ),
     "iris_with_data_extractor": Classifier(
-        data_extractor=lambda r: r,
+        data_extractor=lambda r: r[0:4],
         classifier=path.join(classifiers_path, "iris", "classifier.pickle")
     ),
     "iris_with_result_processor": Classifier(
