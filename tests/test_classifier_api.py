@@ -174,7 +174,8 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         self.assertDictEqual(
             data,
             {
-                "error": "failed to classify object"
+                "error": "failed to classify object",
+                "classifier": "iris"
             }
         )
 

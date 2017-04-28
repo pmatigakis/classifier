@@ -10,7 +10,11 @@ class ClassifierResource(Resource):
                                                .get(classifier)
 
         if classifier_implementation is None:
-            abort(404, error="unknown classifier", classifier=classifier)
+            return abort(
+                404,
+                error="unknown classifier",
+                classifier=classifier
+            )
 
         args = reqparsers.classifier_data.parse_args()
 
@@ -21,7 +25,11 @@ class ClassifierResource(Resource):
         except Exception:
             current_app.logger.exception("failed to classify object")
 
-            abort(500, error="failed to classify object")
+            return abort(
+                500,
+                error="failed to classify object",
+                classifier=classifier
+            )
 
 
 class ClassifiersResource(Resource):
