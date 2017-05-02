@@ -6,10 +6,16 @@ import reqparsers
 
 class ClassifierResource(Resource):
     def post(self, classifier):
+        current_app.logger.info(
+            "running classifier: classifier={}".format(classifier))
+
         classifier_implementation = current_app.config["CLASSIFIERS"] \
                                                .get(classifier)
 
         if classifier_implementation is None:
+            current_app.logger.warning(
+                "unknown classifier: classifier={}".format(classifier))
+
             return abort(
                 404,
                 error="unknown classifier",
