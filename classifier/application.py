@@ -5,6 +5,7 @@ from flask import Flask
 from flask_restful import Api
 
 from classifier.resources import ClassifierResource, ClassifiersResource
+from classifier import configuration
 
 
 def initialize_logging(app):
@@ -29,8 +30,18 @@ def initialize_logging(app):
     logger.setLevel(log_level)
 
 
-def create_app(settings_file):
+def create_app(settings_file, environment_type=None):
     app = Flask(__name__)
+
+    environment_type = environment_type or "production"
+
+    environment_types = {
+        "production": configuration.Production,
+        "development": configuration.Development,
+        "testing": configuration.Testing
+    }
+
+    app.config.from_object(environment_types[environment_type])
 
     app.config.from_pyfile(settings_file)
 
