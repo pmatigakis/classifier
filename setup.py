@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name = "classifier",
-    version = "0.2.0",
-    packages = find_packages(),
+    name="classifier",
+    version="0.2.0",
+    packages=find_packages(),
     install_requires=[
         "scikit-learn==0.17.1",
         "scipy==0.18.0",
@@ -16,8 +16,8 @@ setup(
         "Flask-Script==2.0.5",
         "uWSGI==2.0.14"
     ],
-    test_suite = 'nose.collector',
-    tests_require =[
+    test_suite='nose.collector',
+    tests_require=[
         "nose==1.3.7",
         "mock==2.0.0"
     ],
