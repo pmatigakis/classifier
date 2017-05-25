@@ -7,3 +7,4 @@ classifier.egg-info/
 temp/
 .coverage
 cover/
+.eggs/
