@@ -9,8 +9,19 @@ from classifier import configuration
 
 
 def initialize_logging(app):
+    log_format = "%(asctime)s %(levelname)s [%(process)d:%(thread)d] " \
+                 "%(name)s [%(pathname)s:%(funcName)s:%(lineno)d] %(message)s"
+    formatter = logging.Formatter(log_format)
+
+    logger = logging.getLogger("classifier")
+
     log_level = app.config["LOG_LEVEL"]
+
     if app.config["DEBUG"]:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+        stream_handler.setLevel(logging.DEBUG)
+        logger.addHandler(stream_handler)
         log_level = logging.DEBUG
 
     handler = RotatingFileHandler(
@@ -19,13 +30,9 @@ def initialize_logging(app):
         backupCount=app.config["LOG_FILE_COUNT"],
         encoding="utf8"
     )
-    log_format = "%(asctime)s %(levelname)s [%(process)d:%(thread)d] " \
-                 "%(name)s [%(pathname)s:%(funcName)s:%(lineno)d] %(message)s"
-    formatter = logging.Formatter(log_format)
 
     handler.setFormatter(formatter)
     handler.setLevel(log_level)
-    logger = logging.getLogger("classifier")
     logger.addHandler(handler)
     logger.setLevel(log_level)
 
