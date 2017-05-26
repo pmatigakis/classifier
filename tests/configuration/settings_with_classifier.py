@@ -34,3 +34,6 @@ CLASSIFIERS = {
 }
 
 ERROR_404_HELP = False
+
+HOST = "127.0.0.1"
+PORT = 8022

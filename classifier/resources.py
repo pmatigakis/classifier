@@ -3,6 +3,8 @@ from flask_restful import Resource, abort
 
 import reqparsers
 
+from classifier import __VERSION__
+
 
 class ClassifierResource(Resource):
     def post(self, classifier):
@@ -46,3 +48,13 @@ class ClassifiersResource(Resource):
 class HealthResource(Resource):
     def get(self):
         return {"result": "ok"}
+
+
+class InformationResource(Resource):
+    def get(self):
+        return {
+            "service": "classifier",
+            "version": __VERSION__,
+            "host": current_app.config["HOST"],
+            "port": current_app.config["PORT"]
+        }

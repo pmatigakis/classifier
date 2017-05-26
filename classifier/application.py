@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Api
 
 from classifier.resources import (ClassifierResource, ClassifiersResource,
-                                  HealthResource)
+                                  HealthResource, InformationResource)
 from classifier import configuration
 
 
@@ -63,5 +63,6 @@ def create_app(settings_file, environment_type=None):
 
     api.add_resource(ClassifiersResource, "/api/v1/classifiers")
     api.add_resource(HealthResource, "/service/health")
+    api.add_resource(InformationResource, "/service/information")
 
     return app

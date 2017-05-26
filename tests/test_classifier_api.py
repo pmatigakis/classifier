@@ -214,5 +214,26 @@ class HealthResourceTests(ClassifierTestCaseWithMockClassifiers):
         self.assertDictEqual(data, {"result": "ok"})
 
 
+class InformationResourceTests(ClassifierTestCaseWithMockClassifiers):
+    def test_get_information(self):
+        client = self.app.test_client()
+
+        response = client.get("/service/information")
+
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+
+        self.assertDictEqual(
+            data,
+            {
+                "host": "127.0.0.1",
+                "port": 8022,
+                "service": "classifier",
+                "version": "0.2.0"
+            }
+        )
+
+
 if __name__ == "__main__":
     main()
