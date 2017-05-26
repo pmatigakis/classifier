@@ -41,3 +41,8 @@ class ClassifierResource(Resource):
 class ClassifiersResource(Resource):
     def get(self):
         return current_app.config["CLASSIFIERS"].keys()
+
+
+class HealthResource(Resource):
+    def get(self):
+        return {"result": "ok"}

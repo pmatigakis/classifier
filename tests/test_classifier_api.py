@@ -184,7 +184,7 @@ class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
     def test_get_available_classifiers(self):
         client = self.app.test_client()
 
-        response = client.get("/api/v1/classifiers",)
+        response = client.get("/api/v1/classifiers")
 
         self.assertEqual(response.status_code, 200)
 
@@ -199,6 +199,19 @@ class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
                 'iris_with_data_extractor'
              ]
         )
+
+
+class HealthResourceTests(ClassifierTestCaseWithMockClassifiers):
+    def test_get_health(self):
+        client = self.app.test_client()
+
+        response = client.get("/service/health")
+
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+
+        self.assertDictEqual(data, {"result": "ok"})
 
 
 if __name__ == "__main__":
