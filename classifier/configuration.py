@@ -13,6 +13,14 @@ class Default(object):
     LOG_FILE_COUNT = 5
     LOG_FILE = "classifier.log"
 
+    CONSUL_HOST = None
+    CONSUL_PORT = 8500
+    CONSUL_SCHEME = "http"
+    CONSUL_VERIFY_SSL = True
+    CONSUL_HEALTH_INTERVAL = "10s"
+    CONSUL_HEALTH_TIMEOUT = "5s"
+    SERVICE_NAME = "classifier"
+
 
 class Development(Default):
     SECRET_KEY = "development"
