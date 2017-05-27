@@ -21,6 +21,9 @@ class Default(object):
     CONSUL_HEALTH_TIMEOUT = "5s"
     SERVICE_NAME = "classifier"
 
+    SENTRY_DSN = None
+    SENTRY_LOG_LEVEL = logging.ERROR
+
 
 class Development(Default):
     SECRET_KEY = "development"

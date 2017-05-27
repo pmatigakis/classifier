@@ -3,6 +3,7 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 from flask_restful import Api
+from raven.handlers.logging import SentryHandler
 
 from classifier.resources import (ClassifierResource, ClassifiersResource,
                                   HealthResource, InformationResource)
@@ -38,6 +39,14 @@ def initialize_logging(app):
     logger.setLevel(log_level)
 
 
+def initialize_sentry(app):
+    handler = SentryHandler(app.config["SENTRY_DSN"])
+    handler.setLevel(app.config["SENTRY_LOG_LEVEL"])
+
+    logger = logging.getLogger("classifier")
+    logger.addHandler(handler)
+
+
 def create_app(settings_file, environment_type=None):
     app = Flask(__name__)
 
@@ -55,6 +64,9 @@ def create_app(settings_file, environment_type=None):
 
     if app.config["ENABLE_LOGGING"]:
         initialize_logging(app)
+
+    if app.config["SENTRY_DSN"]:
+        initialize_sentry(app)
 
     api = Api(app)
 
