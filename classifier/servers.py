@@ -10,12 +10,23 @@ logger = logging.getLogger(__name__)
 
 
 class ClassifierServer(BaseApplication):
+    """The classifier service server"""
+
     def __init__(self, app, options=None):
+        """Create a new classifier service object
+
+        :param Flask app: the Flask application
+        :param dict options: the gunicorn configuration options
+        """
         self.options = options or {}
         self.application = app
         super(ClassifierServer, self).__init__()
 
     def _register_service(self, configuration):
+        """Register the service
+
+        :param dict configuration: the application configuration
+        """
         logger.info("registering service to consul")
 
         client = Consul(
@@ -49,6 +60,10 @@ class ClassifierServer(BaseApplication):
         )
 
     def _deregister_service(self, configuration):
+        """Deregister the service
+
+        :param dict configuration: the application configuration
+        """
         logger.info("deregistering service from consul")
 
         client = Consul(
@@ -69,12 +84,20 @@ class ClassifierServer(BaseApplication):
         )
 
     def _on_starting(self, server):
+        """Server is initializing
+
+        :param server: the server object
+        """
         logger.info("server started")
 
         if server.app.application.config.get("CONSUL_HOST") is not None:
             self._register_service(server.app.application.config)
 
     def _on_exit(self, server):
+        """Server is shutting down
+
+        :param server: the server object
+        """
         logger.info("server stopped")
 
         if server.app.application.config.get("CONSUL_HOST") is not None:
