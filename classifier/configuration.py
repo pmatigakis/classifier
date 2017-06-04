@@ -24,6 +24,10 @@ class Default(object):
     SENTRY_DSN = None
     SENTRY_LOG_LEVEL = logging.ERROR
 
+    WORKER_MAX_REQUESTS = 100
+    WORKER_MAX_REQUESTS_JITTER = 10
+    WORKERS = 2
+
 
 class Development(Default):
     SECRET_KEY = "development"

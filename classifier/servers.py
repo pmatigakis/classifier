@@ -9,25 +9,67 @@ from classifier.service import generate_service_id
 logger = logging.getLogger(__name__)
 
 
-class ClassifierServer(BaseApplication):
-    """The classifier service server"""
+def _extract_gunicorn_options(configuration):
+    options = {
+        "preload_app": False,
+        "bind": "{host}:{port}".format(
+            host=configuration["HOST"],
+            port=configuration["PORT"]
+        ),
+        "workers": configuration["WORKERS"],
+        "worker_class": "sync",
+        "max_requests": configuration["WORKER_MAX_REQUESTS"],
+        "max_requests_jitter":
+            configuration["WORKER_MAX_REQUESTS_JITTER"],
+    }
+
+    return options
+
+
+class Server(BaseApplication):
+    """A standalone gunicorn server"""
 
     def __init__(self, app, options=None):
-        """Create a new classifier service object
+        """Create a new Server object
 
-        :param Flask app: the Flask application
-        :param dict options: the gunicorn configuration options
+        :param falcon.API app: the falcon application
+        :param dict options: the gunicorn configuration
         """
         self.options = options or {}
         self.application = app
-        super(ClassifierServer, self).__init__()
 
-    def _register_service(self, configuration):
+        super(Server, self).__init__()
+
+    def load_config(self):
+        for key, value in self.options.items():
+            if key in self.cfg.settings and value is not None:
+                self.cfg.set(key, value)
+
+    def load(self):
+        return self.application
+
+
+class ClassifierServer(Server):
+    """The classifier service server"""
+
+    def __init__(self, app):
+        """Create a new classifier service object
+
+        :param Flask app: the Flask application
+        """
+        self.application = app
+        options = _extract_gunicorn_options(app.config)
+
+        super(ClassifierServer, self).__init__(app, options)
+
+    def _register_service(self):
         """Register the service
 
         :param dict configuration: the application configuration
         """
         logger.info("registering service to consul")
+
+        configuration = self.application.config
 
         client = Consul(
             host=configuration["CONSUL_HOST"],
@@ -59,12 +101,14 @@ class ClassifierServer(BaseApplication):
             check=health_http
         )
 
-    def _deregister_service(self, configuration):
+    def _deregister_service(self):
         """Deregister the service
 
         :param dict configuration: the application configuration
         """
         logger.info("deregistering service from consul")
+
+        configuration = self.application.config
 
         client = Consul(
             host=configuration["CONSUL_HOST"],
@@ -90,8 +134,8 @@ class ClassifierServer(BaseApplication):
         """
         logger.info("server started")
 
-        if server.app.application.config.get("CONSUL_HOST") is not None:
-            self._register_service(server.app.application.config)
+        if self.application.config.get("CONSUL_HOST") is not None:
+            self._register_service()
 
     def _on_exit(self, server):
         """Server is shutting down
@@ -100,18 +144,13 @@ class ClassifierServer(BaseApplication):
         """
         logger.info("server stopped")
 
-        if server.app.application.config.get("CONSUL_HOST") is not None:
-            self._deregister_service(server.app.application.config)
+        if self.application.config.get("CONSUL_HOST") is not None:
+            self._deregister_service()
 
     def load_config(self):
-        for key, value in self.options.items():
-            if key in self.cfg.settings and value is not None:
-                self.cfg.set(key, value)
+        super(ClassifierServer, self).load_config()
 
         # we have to setup the hooks using lambdas in order to avoid the
         # function arity checks of gunicorn
         self.cfg.set("on_starting", lambda server: self._on_starting(server))
         self.cfg.set("on_exit", lambda server: self._on_exit(server))
-
-    def load(self):
-        return self.application
