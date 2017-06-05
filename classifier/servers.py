@@ -32,7 +32,7 @@ class Server(BaseApplication):
     def __init__(self, app, options=None):
         """Create a new Server object
 
-        :param falcon.API app: the falcon application
+        :param Flask app: the flask application
         :param dict options: the gunicorn configuration
         """
         self.options = options or {}
