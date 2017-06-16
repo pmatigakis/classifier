@@ -27,17 +27,3 @@ class Default(object):
     WORKER_MAX_REQUESTS = 100
     WORKER_MAX_REQUESTS_JITTER = 10
     WORKERS = 2
-
-
-class Development(Default):
-    SECRET_KEY = "development"
-    DEBUG = True
-
-
-class Testing(Default):
-    SECRET_KEY = "testing"
-    TESTING = True
-
-
-class Production(Default):
-    ENABLE_LOGGING = True

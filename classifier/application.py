@@ -47,19 +47,10 @@ def initialize_sentry(app):
     logger.addHandler(handler)
 
 
-def create_app(settings_file, environment_type=None):
+def create_app(settings_file):
     app = Flask(__name__)
 
-    environment_type = environment_type or "production"
-
-    environment_types = {
-        "production": configuration.Production,
-        "development": configuration.Development,
-        "testing": configuration.Testing
-    }
-
-    app.config.from_object(environment_types[environment_type])
-
+    app.config.from_object(configuration.Default)
     app.config.from_pyfile(settings_file)
 
     if app.config["ENABLE_LOGGING"]:
