@@ -16,26 +16,30 @@ def initialize_logging(app):
     formatter = logging.Formatter(log_format)
 
     logger = logging.getLogger("classifier")
+    logger.handlers = []
 
     log_level = app.config["LOG_LEVEL"]
 
     if app.config["DEBUG"]:
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)
-        stream_handler.setLevel(logging.DEBUG)
-        logger.addHandler(stream_handler)
         log_level = logging.DEBUG
 
-    handler = RotatingFileHandler(
-        filename=app.config["LOG_FILE"],
-        maxBytes=app.config["LOG_FILE_SIZE"],
-        backupCount=app.config["LOG_FILE_COUNT"],
-        encoding="utf8"
-    )
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    stream_handler.setLevel(log_level)
+    logger.addHandler(stream_handler)
 
-    handler.setFormatter(formatter)
-    handler.setLevel(log_level)
-    logger.addHandler(handler)
+    if app.config["LOG_FILE"] is not None:
+        handler = RotatingFileHandler(
+            filename=app.config["LOG_FILE"],
+            maxBytes=app.config["LOG_FILE_SIZE"],
+            backupCount=app.config["LOG_FILE_COUNT"],
+            encoding="utf8"
+        )
+
+        handler.setFormatter(formatter)
+        handler.setLevel(log_level)
+        logger.addHandler(handler)
+
     logger.setLevel(log_level)
 
 
@@ -53,8 +57,7 @@ def create_app(settings_file):
     app.config.from_object(configuration.Default)
     app.config.from_pyfile(settings_file)
 
-    if app.config["ENABLE_LOGGING"]:
-        initialize_logging(app)
+    initialize_logging(app)
 
     if app.config["SENTRY_DSN"]:
         initialize_sentry(app)

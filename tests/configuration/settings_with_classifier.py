@@ -10,8 +10,6 @@ SECRET_KEY = "testing_secret_key"
 
 SQLALCHEMY_DATABASE_URI = "sqlite://"
 
-ENABLE_LOGGING = False
-
 classifiers_path = path.join(
     path.dirname(path.abspath(__file__)), "..", "classifiers")
 
