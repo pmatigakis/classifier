@@ -230,7 +230,7 @@ class InformationResourceTests(ClassifierTestCaseWithMockClassifiers):
                 "host": "127.0.0.1",
                 "port": 8022,
                 "service": "classifier",
-                "version": "0.2.0"
+                "version": "0.3.0"
             }
         )
 
