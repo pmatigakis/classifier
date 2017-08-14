@@ -45,11 +45,11 @@ These configuration variables are optional.
    Default: ``False``
 
 
-.. py:data:: LOG_LEVEL
+.. py:data:: LOGGING
 
-   Set the log level.
+   The dictionary with the configuration settings for the python logger
 
-   Default: ``INFO``
+   Default: ``None``
 
 .. py:data:: LOG_FILE
 
@@ -103,16 +103,6 @@ These configuration variables are optional.
    The time after which Consul will assume a timeout has occurred.
 
    Default: ``5s``
-
-.. py:data:: SENTRY_DSN
-
-   The connection string for Sentry.
-
-.. py:data:: SENTRY_LOG_LEVEL
-
-   The log level used for Sentry.
-
-   Default: ``ERROR``
 
 .. py:data:: WORKER_MAX_REQUESTS
 

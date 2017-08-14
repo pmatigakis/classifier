@@ -15,8 +15,7 @@ setup(
         "beautifulsoup4==4.5.1",
         "Flask-Script==2.0.5",
         "gunicorn==19.7.1",
-        "python-consul==0.7.0",
-        "raven==6.1.0"
+        "python-consul==0.7.0"
     ],
     test_suite='nose.collector',
     tests_require=[
