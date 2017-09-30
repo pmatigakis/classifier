@@ -1,0 +1,11 @@
+dist: trusty
+language: python
+python:
+  - "2.7"
+install:
+  - python setup.py install
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+script:
+  - pip install coverage
+  - coverage run setup.py test
