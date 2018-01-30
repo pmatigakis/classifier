@@ -12,7 +12,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         client = self.app.test_client()
 
         data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
+            "data": [[5.4, 3.0, 4.5, 1.5]]
         }
 
         headers = {
@@ -32,11 +32,13 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         self.assertDictEqual(
             data,
             {
-                "result": {
-                    'Iris-setosa': 0.010312340747190656,
-                    'Iris-versicolor': 0.3650346947203982,
-                    'Iris-virginica': 0.6246529645324113
-                }
+                "results": [
+                    {
+                        'Iris-setosa': 0.010312340747190656,
+                        'Iris-versicolor': 0.3650346947203982,
+                        'Iris-virginica': 0.6246529645324113
+                    }
+                ]
             }
         )
 
@@ -44,7 +46,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         client = self.app.test_client()
 
         data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
+            "data": [[5.4, 3.0, 4.5, 1.5]]
         }
 
         headers = {
@@ -61,63 +63,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         self.assertDictEqual(
             data,
             {
-                "result": "Iris-virginica"
-            }
-        )
-
-    def test_classifier_with_data_extractor(self):
-        client = self.app.test_client()
-
-        data = {
-            "data": [5.4, 3.0, 4.5, 1.5, 0.0, 0.0, 0.0]
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-        }
-
-        response = client.post(
-            "/api/v1/predict/iris_with_data_extractor",
-            data=json.dumps(data),
-            headers=headers
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data)
-
-        self.assertDictEqual(
-            data,
-            {
-                "result": "Iris-virginica"
-            }
-        )
-
-    def test_classifier_with_result_processor(self):
-        client = self.app.test_client()
-
-        data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-        }
-
-        response = client.post(
-            "/api/v1/predict/iris_with_result_processor",
-            data=json.dumps(data),
-            headers=headers
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data)
-
-        self.assertDictEqual(
-            data,
-            {
-                "result": {"data": "Iris-virginica"}
+                "results": ["Iris-virginica"]
             }
         )
 
@@ -125,7 +71,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         client = self.app.test_client()
 
         data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
+            "data": [[5.4, 3.0, 4.5, 1.5]]
         }
 
         headers = {
@@ -157,7 +103,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
         client = self.app.test_client()
 
         data = {
-            "data": [5.4, 3.0, 4.5, 1.5]
+            "data": [[5.4, 3.0, 4.5, 1.5]]
         }
 
         headers = {
@@ -194,9 +140,7 @@ class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
             data,
             [
                 'iris',
-                'iris_probabilities',
-                'iris_with_result_processor',
-                'iris_with_data_extractor'
+                'iris_probabilities'
              ]
         )
 

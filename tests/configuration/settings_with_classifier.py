@@ -20,15 +20,7 @@ CLASSIFIERS = {
     "iris_probabilities": Classifier(
         classifier=path.join(classifiers_path, "iris", "classifier.pickle"),
         probabilities=True
-    ),
-    "iris_with_data_extractor": Classifier(
-        data_extractor=lambda r: r[0:4],
-        classifier=path.join(classifiers_path, "iris", "classifier.pickle")
-    ),
-    "iris_with_result_processor": Classifier(
-        classifier=path.join(classifiers_path, "iris", "classifier.pickle"),
-        result_processor=lambda r: {"data": r}
-    ),
+    )
 }
 
 ERROR_404_HELP = False

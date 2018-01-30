@@ -31,7 +31,7 @@ class ClassifierResource(Resource):
 
         try:
             response = {
-                "result": classifier_implementation.classify(args)
+                "results": classifier_implementation.classify(args)
             }
         except Exception:
             logger.exception("failed to classify object")
