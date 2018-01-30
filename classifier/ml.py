@@ -3,6 +3,8 @@ import logging
 import numpy as np
 from sklearn.externals import joblib
 
+from classifier.exceptions import ClassifierMethodVerificationError
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,12 +16,22 @@ def extract_text_data(data):
 class Classifier(object):
     def __init__(self, classifier, data_extractor=None, result_processor=None,
                  probabilities=False):
-        classifier = joblib.load(classifier)
+        if isinstance(classifier, (str, unicode)):
+            classifier = joblib.load(classifier)
+        else:
+            self._verify_classifier_methods(classifier)
+            classifier = classifier
 
         self.data_extractor = data_extractor
         self.classifier = classifier
         self.result_processor = result_processor
         self.probabilities = probabilities
+
+    def _verify_classifier_methods(self, classifier):
+        required_methods = ["predict", "predict_proba", "classes_"]
+        for method in required_methods:
+            if not hasattr(classifier, method):
+                raise ClassifierMethodVerificationError(method)
 
     def extract_data(self, args):
         if self.data_extractor is None:
