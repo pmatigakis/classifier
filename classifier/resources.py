@@ -11,21 +11,33 @@ logger = logging.getLogger(__name__)
 
 
 class ClassifierResource(Resource):
+    def _handle_unknown_classifier_error(self, classifier):
+        logger.warning("unknown classifier: classifier=%s", classifier)
+
+        return abort(
+            404,
+            error="unknown classifier",
+            classifier=classifier
+        )
+
+    def _handle_classifier_execution_error(self, classifier):
+        log_msg = "error occurred while running classifier: classifier=%s"
+        logger.exception(log_msg, classifier)
+
+        return abort(
+            500,
+            error="failed to classify object",
+            classifier=classifier
+        )
+
     def post(self, classifier):
-        logger.info("running classifier: classifier={}".format(classifier))
+        logger.info("running classifier: classifier=%s", classifier)
 
         classifier_implementation = current_app.config["CLASSIFIERS"] \
                                                .get(classifier)
 
         if classifier_implementation is None:
-            logger.warning(
-                "unknown classifier: classifier={}".format(classifier))
-
-            return abort(
-                404,
-                error="unknown classifier",
-                classifier=classifier
-            )
+            return self._handle_unknown_classifier_error(classifier)
 
         args = reqparsers.classifier_data.parse_args()
 
@@ -34,16 +46,10 @@ class ClassifierResource(Resource):
                 "results": classifier_implementation.classify(args)
             }
         except Exception:
-            logger.exception("failed to classify object")
+            return self._handle_classifier_execution_error(classifier)
 
-            return abort(
-                500,
-                error="failed to classify object",
-                classifier=classifier
-            )
-
-        log_msg = "classification request executed successfully: classifier={}"
-        logger.info(log_msg.format(classifier))
+        log_msg = "classification request executed successfully: classifier=%s"
+        logger.info(log_msg, classifier)
 
         return response
 
