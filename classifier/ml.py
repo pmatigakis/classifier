@@ -28,25 +28,31 @@ class Classifier(object):
         required_methods = ["predict", "predict_proba", "classes_"]
         for method in required_methods:
             if not hasattr(classifier, method):
+                logger.error("missing method '%s' from classifier", method)
+
                 raise ClassifierMethodVerificationError(method)
 
     def run_classifier(self, data):
+        return (
+            self.classifier.predict_proba(data) if self.probabilities
+            else self.classifier.predict(data)
+        )
+
+    def _create_response(self, classification_results):
         if self.probabilities:
-            return self.classifier.predict_proba(data)
+            results = [
+                dict(zip(self.classifier.classes_, result))
+                for result in classification_results
+            ]
         else:
-            return self.classifier.predict(data)
+            results = classification_results.tolist()
+
+        return results
 
     def classify(self, args):
         data = np.array(args.data)
 
-        results = self.run_classifier(data)
+        classification_results = self.run_classifier(data)
+        response = self._create_response(classification_results)
 
-        if self.probabilities:
-            results = [
-                dict(zip(self.classifier.classes_, result))
-                for result in results
-            ]
-        else:
-            results = results.tolist()
-
-        return results
+        return response
