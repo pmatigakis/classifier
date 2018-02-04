@@ -45,7 +45,11 @@ class Classifier(object):
                 for result in classification_results
             ]
         else:
-            results = classification_results.tolist()
+            results = (
+                classification_results.tolist()
+                if not isinstance(classification_results, list)
+                else classification_results
+            )
 
         return results
 
