@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/topicaxis/classifier.svg?branch=develop)](https://travis-ci.org/topicaxis/classifier)
+[![codecov](https://codecov.io/gh/topicaxis/classifier/branch/develop/graph/badge.svg)](https://codecov.io/gh/topicaxis/classifier)
+
 A Flask web application that exposes a scikit-learn classifier over an REST API endpoint
 
 For usage instructions use Sphinx to build the documentation in the `docs` folder.
