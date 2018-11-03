@@ -15,6 +15,8 @@ def extract_text_data(data):
 
 class Classifier(object):
     def __init__(self, classifier, probabilities=False):
+        self.probabilities = probabilities
+
         if isinstance(classifier, (str, unicode)):
             classifier = joblib.load(classifier)
         else:
@@ -22,10 +24,12 @@ class Classifier(object):
             classifier = classifier
 
         self.classifier = classifier
-        self.probabilities = probabilities
 
     def _verify_classifier_methods(self, classifier):
-        required_methods = ["predict", "predict_proba", "classes_"]
+        required_methods = ["predict"]
+        if self.probabilities:
+            required_methods.extend(["predict_proba", "classes_"])
+
         for method in required_methods:
             if not hasattr(classifier, method):
                 logger.error("missing method '%s' from classifier", method)
