@@ -9,3 +9,4 @@ temp/
 cover/
 .eggs/
 docs/build/
+.env
