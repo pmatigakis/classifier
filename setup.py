@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="classifier",
-    version="0.5.1",
+    version="0.6.0",
     packages=find_packages(),
     install_requires=[
         "scikit-learn==0.17.1",
