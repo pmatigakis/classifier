@@ -4,6 +4,7 @@ from unittest import main
 from mock import patch
 
 from common import ClassifierTestCaseWithMockClassifiers
+from classifier import __VERSION__
 from classifier.ml import Classifier
 
 
@@ -174,7 +175,7 @@ class InformationResourceTests(ClassifierTestCaseWithMockClassifiers):
                 "host": "127.0.0.1",
                 "port": 8022,
                 "service": "classifier",
-                "version": "0.5.1"
+                "version": __VERSION__
             }
         )
 
