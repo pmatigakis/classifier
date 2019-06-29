@@ -7,8 +7,8 @@ from classifiers.keyword_selection.classifier import KeywordSelectionClassifier
 
 from classifier.ml import Classifier
 
-DEBUG = strtobool(os.getenv("DEBUG", "False"))
-TESTING = strtobool(os.getenv("TESTING", "False"))
+DEBUG = bool(strtobool(os.getenv("DEBUG", "False")))
+TESTING = bool(strtobool(os.getenv("TESTING", "False")))
 
 PROPAGATE_EXCEPTIONS = True
 
@@ -20,15 +20,15 @@ CLASSIFIERS = {
     "select-keywords": Classifier(classifier=KeywordSelectionClassifier())
 }
 
-
-host_pattern = re.compile(r"^(.+?)\s+{}$".format(os.getenv("HOSTNAME")))
-host = None
-with open("/etc/hosts", "r") as f:
-    for line in f:
-        m = host_pattern.match(line)
-        if m:
-            host = m.group(1)
-            break
+host = os.getenv("HOST")
+if host is None:
+    host_pattern = re.compile(r"^(.+?)\s+{}$".format(os.getenv("HOSTNAME")))
+    with open("/etc/hosts", "r") as f:
+        for line in f:
+            m = host_pattern.match(line)
+            if m:
+                host = m.group(1)
+                break
 
 if host is None:
     raise RuntimeError("failed to find the container ip address")
@@ -43,7 +43,7 @@ WORKERS = int(os.getenv("WORKERS", 4))
 CONSUL_HOST = os.getenv("CONSUL_HOST")
 CONSUL_PORT = int(os.getenv("CONSUL_PORT", 8500))
 CONSUL_SCHEME = os.getenv("CONSUL_SCHEME", "http")
-CONSUL_VERIFY_SSL = strtobool(os.getenv("CONSUL_VERIFY_SSL", "True"))
+CONSUL_VERIFY_SSL = bool(strtobool(os.getenv("CONSUL_VERIFY_SSL", "True")))
 CONSUL_HEALTH_INTERVAL = "10s"
 CONSUL_HEALTH_TIMEOUT = "5s"
 
