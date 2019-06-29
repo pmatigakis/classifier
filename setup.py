@@ -16,7 +16,8 @@ setup(
         "Flask-Script==2.0.5",
         "gunicorn==19.7.1",
         "python-consul==0.7.0",
-        "raven==6.1.0"
+        "raven==6.1.0",
+        "python-dotenv==0.10.3"
     ],
     test_suite='nose.collector',
     tests_require=[

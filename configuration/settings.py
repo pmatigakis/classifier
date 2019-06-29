@@ -7,6 +7,10 @@ from classifiers.keyword_selection.classifier import KeywordSelectionClassifier
 
 from classifier.ml import Classifier
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 DEBUG = bool(strtobool(os.getenv("DEBUG", "False")))
 TESTING = bool(strtobool(os.getenv("TESTING", "False")))
 
