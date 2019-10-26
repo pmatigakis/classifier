@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from sklearn.externals import joblib
+import joblib
 
 from classifier.exceptions import ClassifierMethodVerificationError
 
@@ -17,7 +17,7 @@ class Classifier(object):
     def __init__(self, classifier, probabilities=False):
         self.probabilities = probabilities
 
-        if isinstance(classifier, (str, unicode)):
+        if isinstance(classifier, str):
             classifier = joblib.load(classifier)
         else:
             self._verify_classifier_methods(classifier)

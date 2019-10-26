@@ -2,7 +2,7 @@ import csv
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.externals import joblib
+import joblib
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     clf = LogisticRegression()
     clf.fit(data, target)
 
-    joblib.dump(clf, "classifier.pickle")
+    joblib.dump(clf, "classifier.joblib")
 
 
 if __name__ == "__main__":

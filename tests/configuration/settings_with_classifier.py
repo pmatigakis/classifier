@@ -15,10 +15,10 @@ classifiers_path = path.join(
 
 CLASSIFIERS = {
     "iris": Classifier(
-        classifier=path.join(classifiers_path, "iris", "classifier.pickle")
+        classifier=path.join(classifiers_path, "iris", "classifier.joblib")
     ),
     "iris_probabilities": Classifier(
-        classifier=path.join(classifiers_path, "iris", "classifier.pickle"),
+        classifier=path.join(classifiers_path, "iris", "classifier.joblib"),
         probabilities=True
     )
 }

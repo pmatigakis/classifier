@@ -3,7 +3,7 @@ import logging
 from flask import current_app
 from flask_restful import Resource, abort
 
-import reqparsers
+from classifier import reqparsers
 
 from classifier import __VERSION__
 
@@ -58,7 +58,7 @@ class ClassifiersResource(Resource):
     def get(self):
         logger.info("list of usable classifiers requested")
 
-        return current_app.config["CLASSIFIERS"].keys()
+        return list(current_app.config["CLASSIFIERS"].keys())
 
 
 class HealthResource(Resource):

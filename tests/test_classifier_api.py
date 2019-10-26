@@ -1,7 +1,6 @@
 import json
 from unittest import main
-
-from mock import patch
+from unittest.mock import patch
 
 from common import ClassifierTestCaseWithMockClassifiers
 from classifier import __VERSION__
@@ -28,20 +27,16 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
-
-        self.assertDictEqual(
-            data,
-            {
-                "results": [
-                    {
-                        'Iris-setosa': 0.010312340747190656,
-                        'Iris-versicolor': 0.3650346947203982,
-                        'Iris-virginica': 0.6246529645324113
-                    }
-                ]
-            }
-        )
+        data = json.loads(response.data.decode())
+        self.assertIn("results", data)
+        self.assertEqual(len(data["results"]), 1)
+        self.assertEqual(len(data["results"][0]), 3)
+        self.assertAlmostEqual(
+            data["results"][0]["Iris-setosa"], 0.01031, 5)
+        self.assertAlmostEqual(
+            data["results"][0]["Iris-versicolor"], 0.36503, 5)
+        self.assertAlmostEqual(
+            data["results"][0]["Iris-virginica"], 0.62465, 5)
 
     def test_classifier(self):
         client = self.app.test_client()
@@ -59,7 +54,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
         self.assertDictEqual(
             data,
@@ -87,7 +82,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 404)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
         self.assertDictEqual(
             data,
@@ -116,7 +111,7 @@ class ClassificationEndpointTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 500)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
         self.assertDictEqual(
             data,
@@ -135,9 +130,9 @@ class ClassifiersResourceTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             data,
             [
                 'iris',
@@ -154,7 +149,7 @@ class HealthResourceTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
         self.assertDictEqual(data, {"result": "ok"})
 
@@ -167,7 +162,7 @@ class InformationResourceTests(ClassifierTestCaseWithMockClassifiers):
 
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
+        data = json.loads(response.data.decode())
 
         self.assertDictEqual(
             data,

@@ -2,8 +2,8 @@ from distutils.util import strtobool
 import os
 import re
 
-from classifiers.documents.categories.classifier import CategoryClassifier
-from classifiers.keyword_selection.classifier import KeywordSelectionClassifier
+from classifiers.documents.categories.classifier import create_category_classifier
+from classifiers.keyword_selection.classifiers import create_keyword_selection_classifier
 
 from classifier.ml import Classifier
 
@@ -18,10 +18,10 @@ PROPAGATE_EXCEPTIONS = True
 
 CLASSIFIERS = {
     "categories": Classifier(
-        classifier=CategoryClassifier(),
+        classifier=create_category_classifier(),
         probabilities=True
     ),
-    "select-keywords": Classifier(classifier=KeywordSelectionClassifier())
+    "select-keywords": Classifier(classifier=create_keyword_selection_classifier())
 }
 
 host = os.getenv("HOST")
