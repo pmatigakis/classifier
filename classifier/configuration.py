@@ -2,6 +2,8 @@ import logging
 
 
 class Default(object):
+    SECRET_KEY = "secret-key"
+
     DEBUG = False
     TESTING = False
 
