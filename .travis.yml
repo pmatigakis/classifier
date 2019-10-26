@@ -1,13 +1,11 @@
-dist: trusty
+dist: xenial
 language: python
 python:
-  - "2.7"
+  - "3.5"
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y gfortran
 install:
-  - pip install numpy==1.11.1
-  - pip install scipy==0.18.0
   - python setup.py install
 after_success:
   - bash <(curl -s https://codecov.io/bash)
