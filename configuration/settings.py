@@ -2,12 +2,9 @@ from distutils.util import strtobool
 import os
 import re
 
-from classifiers.documents.categories.classifier import create_category_classifier
-from classifiers.keyword_selection.classifiers import create_keyword_selection_classifier
-
 from classifier.ml import Classifier
-
 from dotenv import load_dotenv
+import joblib
 
 load_dotenv()
 
@@ -19,11 +16,22 @@ TESTING = bool(strtobool(os.getenv("TESTING", "False")))
 PROPAGATE_EXCEPTIONS = True
 
 CLASSIFIERS = {
-    "categories": Classifier(
-        classifier=create_category_classifier(),
+    "iris-probabilities": Classifier(
+        classifier=joblib.load("../examples/iris/classifier.joblib"),
         probabilities=True
     ),
-    "select-keywords": Classifier(classifier=create_keyword_selection_classifier())
+    "iris": Classifier(
+        classifier=joblib.load("../examples/iris/classifier.joblib")
+    ),
+    "multilabel-probabilities": Classifier(
+        classifier=joblib.load("../examples/multilabel/classifier.joblib"),
+        binarizer=joblib.load("../examples/multilabel/binarizer.joblib"),
+        probabilities=True
+    ),
+    "multilabel": Classifier(
+        classifier=joblib.load("../examples/multilabel/classifier.joblib"),
+        binarizer=joblib.load("../examples/multilabel/binarizer.joblib")
+    )
 }
 
 host = os.getenv("HOST")

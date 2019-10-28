@@ -3,8 +3,6 @@ import logging
 import numpy as np
 import joblib
 
-from classifier.exceptions import ClassifierMethodVerificationError
-
 
 logger = logging.getLogger(__name__)
 
@@ -14,27 +12,17 @@ def extract_text_data(data):
 
 
 class Classifier(object):
-    def __init__(self, classifier, probabilities=False):
+    def __init__(self, classifier, binarizer=None, probabilities=False):
         self.probabilities = probabilities
 
-        if isinstance(classifier, str):
-            classifier = joblib.load(classifier)
+        self.classifier = self._load_component(classifier)
+        self.binarizer = self._load_component(binarizer)
+
+    def _load_component(self, component):
+        if isinstance(component, str):
+            return joblib.load(component)
         else:
-            self._verify_classifier_methods(classifier)
-            classifier = classifier
-
-        self.classifier = classifier
-
-    def _verify_classifier_methods(self, classifier):
-        required_methods = ["predict"]
-        if self.probabilities:
-            required_methods.extend(["predict_proba", "classes_"])
-
-        for method in required_methods:
-            if not hasattr(classifier, method):
-                logger.error("missing method '%s' from classifier", method)
-
-                raise ClassifierMethodVerificationError(method)
+            return component
 
     def run_classifier(self, data):
         return (
@@ -42,20 +30,34 @@ class Classifier(object):
             else self.classifier.predict(data)
         )
 
+    def _create_probabilities_response(self, classification_results):
+        classes = (
+            self.binarizer.classes_
+            if self.binarizer
+            else self.classifier.classes_
+        )
+
+        return [
+            dict(zip(classes, result))
+            for result in classification_results
+        ]
+
+    def _create_result_response(self, classification_results):
+        if self.binarizer:
+            classification_results = self.binarizer.inverse_transform(
+                classification_results)
+
+        return (
+            classification_results.tolist()
+            if not isinstance(classification_results, list)
+            else classification_results
+        )
+
     def _create_response(self, classification_results):
         if self.probabilities:
-            results = [
-                dict(zip(self.classifier.classes_, result))
-                for result in classification_results
-            ]
+            return self._create_probabilities_response(classification_results)
         else:
-            results = (
-                classification_results.tolist()
-                if not isinstance(classification_results, list)
-                else classification_results
-            )
-
-        return results
+            return self._create_result_response(classification_results)
 
     def classify(self, args):
         data = np.array(args.data)
