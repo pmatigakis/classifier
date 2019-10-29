@@ -14,10 +14,10 @@ REPOSITORY=git@github.com:topicaxis/classifier.git
 
 cd $RELEASE_DIR
 
-virtualenv --python=python2.7 $TOOLS_VIRTUALENV
-$TOOLS_VIRTUALENV/bin/pip install bumpversion==0.5.3 flake8==3.7.7
+virtualenv --python=python3 $TOOLS_VIRTUALENV
+$TOOLS_VIRTUALENV/bin/pip install bumpversion flake8
 
-virtualenv --python=python2.7 $CLASSIFIER_VIRTUALENV
+virtualenv --python=python3 $CLASSIFIER_VIRTUALENV
 
 git clone $REPOSITORY
 cd classifier
