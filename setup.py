@@ -13,7 +13,7 @@ def read_requirements_file(requirements_file):
 
 setup(
     name="classifier",
-    version="0.7.1",
+    version="0.7.2",
     packages=find_packages(),
     install_requires=read_requirements_file("requirements.txt"),
     test_suite='nose.collector',
