@@ -11,7 +11,7 @@ setup(
         "numpy==1.11.1",
         "Flask==0.11.1",
         "Flask-RESTful==0.3.5",
-        "requests==2.11.1",
+        "requests==2.20.0",
         "beautifulsoup4==4.5.1",
         "Flask-Script==2.0.5",
         "uWSGI==2.0.14"
