@@ -9,7 +9,7 @@ setup(
         "scikit-learn==0.17.1",
         "scipy==0.18.0",
         "numpy==1.11.1",
-        "Flask==0.11.1",
+        "Flask==1.0",
         "Flask-RESTful==0.3.5",
         "requests==2.11.1",
         "beautifulsoup4==4.5.1",
