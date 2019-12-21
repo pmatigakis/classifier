@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/pmatigakis/classifier.svg?branch=develop)](https://travis-ci.org/topicaxis/classifier)
-[![codecov](https://codecov.io/gh/pmatigakis/classifier/branch/develop/graph/badge.svg)](https://codecov.io/gh/topicaxis/classifier)
+[![Build Status](https://travis-ci.org/pmatigakis/classifier.svg?branch=develop)](https://travis-ci.org/pmatigakis/classifier)
+[![codecov](https://codecov.io/gh/pmatigakis/classifier/branch/develop/graph/badge.svg)](https://codecov.io/gh/pmatigakis/classifier)
 
 A Flask web application that exposes a scikit-learn classifier over an REST API endpoint
 
