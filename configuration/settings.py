@@ -8,13 +8,21 @@ import joblib
 
 load_dotenv()
 
+# the Flask secret key. ALWAYS set this when the classifier service runs in
+# production
 SECRET_KEY = os.getenv("SECRET_KEY", "secret-key")
 
+# run the classifier in debug model
 DEBUG = bool(strtobool(os.getenv("DEBUG", "False")))
+
+# run the classifier in testing model. Not doing something special at the moment
+# so you can ignore this setting
 TESTING = bool(strtobool(os.getenv("TESTING", "False")))
 
 PROPAGATE_EXCEPTIONS = True
 
+# add your scikit-learn classifiers here. The key valus is the classifier name
+# that will be used in the prediction endpoint
 CLASSIFIERS = {
     "iris-probabilities": Classifier(
         classifier=joblib.load("../examples/iris/classifier.joblib"),
@@ -34,6 +42,9 @@ CLASSIFIERS = {
     )
 }
 
+# set the address that the classifier will listen to. With a bit of ugly hacking
+# we will get the address to use when the classifier runs inside a docker
+# container
 host = os.getenv("HOST")
 if host is None:
     host_pattern = re.compile(r"^(.+?)\s+{}$".format(os.getenv("HOSTNAME")))
@@ -48,12 +59,20 @@ if host is None:
     raise RuntimeError("failed to find the container ip address")
 
 HOST = host
+
+# set the port where the classifier will listen to
 PORT = int(os.getenv("PORT", 8022))
 
+# the number of request a worker will serve before it is restarted
 WORKER_MAX_REQUESTS = int(os.getenv("WORKER_MAX_REQUESTS", 500))
+
+# set the worker request jitter
 WORKER_MAX_REQUESTS_JITTER = int(os.getenv("WORKER_MAX_REQUESTS_JITTER", 30))
+
+# set the number of workers to start
 WORKERS = int(os.getenv("WORKERS", 4))
 
+# the settings for the consul health checks
 CONSUL_HOST = os.getenv("CONSUL_HOST")
 CONSUL_PORT = int(os.getenv("CONSUL_PORT", 8500))
 CONSUL_SCHEME = os.getenv("CONSUL_SCHEME", "http")
@@ -69,6 +88,7 @@ __handlers = {
     }
 }
 
+# set the sentry dsn to use for exception logging
 __sentry_dsn = os.getenv("SENTRY_DSN")
 if __sentry_dsn:
     __handlers["sentry"] = {
@@ -77,6 +97,7 @@ if __sentry_dsn:
         'dsn': __sentry_dsn
     }
 
+# configure the loggers
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -88,10 +109,6 @@ LOGGING = {
     'handlers': __handlers,
     'loggers': {
         'classifier': {
-            'handlers': __handlers.keys(),
-            'propagate': True
-        },
-        'classifiers': {
             'handlers': __handlers.keys(),
             'propagate': True
         }
