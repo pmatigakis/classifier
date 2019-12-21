@@ -1,18 +1,26 @@
-FROM python:2.7.14
+FROM python:3.5.2
 
 WORKDIR /app
 
+COPY ./docker-entrypoint.sh /app
 ADD classifier /app/classifier
 COPY setup.py /app
+COPY requirements.txt /app
+COPY requirements-test.txt /app
+COPY MANIFEST.in /app
+
+# you will have to modify the settings file according to your needs before
+# building the docker image
 COPY configuration/settings.py /app/configuration/
 
-RUN pip install scipy==0.18.0 numpy==1.11.1
-RUN pip install scikit-learn==0.17.1
-RUN python setup.py install
-RUN pip install git+https://github.com/topicaxis/trained-models.git@0.4.0
+# the example classifiers are added for testing. You will also want to change
+# this and add your own classifiers somehow
+ADD examples /app/examples
 
+RUN pip install .
+
+# this has to be the same as the port that is defined in the settings
 EXPOSE 8022
 
-COPY ./docker-entrypoint.sh /app
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["run"]

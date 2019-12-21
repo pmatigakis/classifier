@@ -3,7 +3,7 @@ set -e
 
 if [ "$1" = "run" ]; then
     cd /app/configuration
-    exec classifier-cli runserver
+    exec classifier-server
 fi
 
 exec "$@"
