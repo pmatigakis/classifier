@@ -10,7 +10,7 @@ fi
 RELEASE_DIR=$(mktemp -d -t classifier-XXXXXXXXXX)
 TOOLS_VIRTUALENV=$RELEASE_DIR/virtualenv_tools
 CLASSIFIER_VIRTUALENV=$RELEASE_DIR/virtualenv_classifier
-REPOSITORY=git@github.com:topicaxis/classifier.git
+REPOSITORY=git@github.com:pmatigakis/classifier.git
 
 cd $RELEASE_DIR
 
